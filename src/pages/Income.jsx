@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import API from '../utils/apiConfig';
-// import { useNavigate } from 'react-router-dom';
 
 const Income = () => {
   const [incomes, setIncomes] = useState([]);
@@ -16,8 +15,6 @@ const Income = () => {
   const [loading, setLoading] = useState(false);
   const [collapsedMonths, setCollapsedMonths] = useState({});
   const [userName, setUserName] = useState('');
-
-//   const navigate = useNavigate();
 
   const fetchIncomes = async () => {
     try {
@@ -126,119 +123,125 @@ const Income = () => {
   const grandTotal = incomes.reduce((sum, income) => sum + income.amount, 0);
 
   return (
-    <div className="bg-gradient-to-r from-blue-50 to-blue-100 shadow-lg rounded p-6">
-      <h1 className="text-3xl font-bold mb-6 text-center text-blue-700">Income Management</h1>
+    <div className="flex flex-col lg:flex-row">
+      {/* Sidebar Space */}
+      <div className="hidden lg:block w-64 bg-gray-200 min-h-screen"></div>
 
-      {/* Income Form */}
-      <form className="mb-8" onSubmit={handleSubmit}>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <select
-            value={form.votehead}
-            onChange={(e) => setForm({ ...form, votehead: e.target.value })}
-            className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          >
-            <option value="">Select Votehead</option>
-            {voteheads.map((votehead) => (
-              <option key={votehead._id} value={votehead._id}>{votehead.name}</option>
-            ))}
-          </select>
+      {/* Main Content */}
+      <div className="flex-grow p-4">
+        <h1 className="text-3xl font-bold mb-6 text-center text-blue-700">Income Management</h1>
 
-          <input
-            type="number"
-            placeholder="Amount"
-            className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-            value={form.amount}
-            onChange={(e) => setForm({ ...form, amount: e.target.value })}
-            required
-          />
-          <input
-            type="text"
-            placeholder="Description"
-            className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 col-span-1 md:col-span-2"
-            value={form.description}
-            onChange={(e) => setForm({ ...form, description: e.target.value })}
-          />
-        </div>
-        <button
-          type="submit"
-          className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition ease-in-out duration-200"
-          disabled={loading}
-        >
-          {loading ? 'Processing...' : editId ? 'Update Income' : 'Add Income'}
-        </button>
-        {error && <p className="text-red-500 mt-2">{error}</p>}
-      </form>
+        {/* Income Form */}
+        <form className="mb-8" onSubmit={handleSubmit}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <select
+              value={form.votehead}
+              onChange={(e) => setForm({ ...form, votehead: e.target.value })}
+              className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            >
+              <option value="">Select Votehead</option>
+              {voteheads.map((votehead) => (
+                <option key={votehead._id} value={votehead._id}>{votehead.name}</option>
+              ))}
+            </select>
 
-      {/* Income Table by Month */}
-      {Object.keys(groupedIncomes).map((month) => (
-        <div key={month} className="mb-6">
-          <div
-            className="bg-blue-200 p-3 cursor-pointer font-bold flex justify-between items-center rounded-lg shadow-md"
-            onClick={() => toggleMonth(month)}
-          >
-            <span>{month}</span>
-            <span>Total: {groupedIncomes[month].reduce((sum, income) => sum + income.amount, 0)}</span>
+            <input
+              type="number"
+              placeholder="Amount"
+              className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={form.amount}
+              onChange={(e) => setForm({ ...form, amount: e.target.value })}
+              required
+            />
+            <input
+              type="text"
+              placeholder="Description"
+              className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 col-span-1 md:col-span-2"
+              value={form.description}
+              onChange={(e) => setForm({ ...form, description: e.target.value })}
+            />
           </div>
-          {!collapsedMonths[month] && (
-            <table className="w-full border-collapse border border-gray-300 mt-3 rounded-md overflow-hidden">
-              <thead>
-                <tr className="bg-blue-300">
-                  <th className="border p-2">Votehead</th>
-                  <th className="border p-2">Amount</th>
-                  <th className="border p-2">Description</th>
-                  <th className="border p-2">Day</th>
-                  <th className="border p-2">User</th>
-                  {userName === 'Admin' && <th className="border p-2">Actions</th>}
-                </tr>
-              </thead>
-              <tbody>
-                {groupedIncomes[month].map((income) => (
-                  <tr key={income._id} className="hover:bg-blue-50 transition">
-                    <td className="border p-2">{income.votehead?.name || 'N/A'}</td>
-                    <td className="border p-2">{income.amount}</td>
-                    <td className="border p-2">{income.description}</td>
-                    <td className="border p-2">
-                      {new Date(income.createdAt).toLocaleDateString('en-US', {
-                        weekday: 'short', day: 'numeric', month: 'short', year: 'numeric',
-                      })}
-                    </td>
-                    <td className="border p-2">{income.user || 'Unknown'}</td>
-                    {userName === 'Admin' && (
-                      <td className="border p-2 flex justify-center space-x-2">
-                        <button
-                          onClick={() => {
-                            setForm({
-                              votehead: income.votehead?._id || '',
-                              amount: income.amount,
-                              description: income.description,
-                              year: income.year,
-                            });
-                            setEditId(income._id);
-                          }}
-                          className="bg-yellow-500 text-white py-1 px-3 rounded hover:bg-yellow-600"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDelete(income._id)}
-                          className="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600"
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    )}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
-      ))}
+          <button
+            type="submit"
+            className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition ease-in-out duration-200"
+            disabled={loading}
+          >
+            {loading ? 'Processing...' : editId ? 'Update Income' : 'Add Income'}
+          </button>
+          {error && <p className="text-red-500 mt-2">{error}</p>}
+        </form>
 
-      {/* Grand Total */}
-      <div className="mt-6 bg-blue-300 p-3 text-center font-bold rounded-lg shadow-lg">
-        Grand Total: {grandTotal}
+        {/* Income Table by Month */}
+        {Object.keys(groupedIncomes).map((month) => (
+          <div key={month} className="mb-6">
+            <div
+              className="bg-blue-200 p-3 cursor-pointer font-bold flex justify-between items-center rounded-lg shadow-md"
+              onClick={() => toggleMonth(month)}
+            >
+              <span>{month}</span>
+              <span>Total: {groupedIncomes[month].reduce((sum, income) => sum + income.amount, 0)}</span>
+            </div>
+            {!collapsedMonths[month] && (
+              <table className="w-full border-collapse border border-gray-300 mt-3 rounded-md overflow-hidden">
+                <thead>
+                  <tr className="bg-blue-300">
+                    <th className="border p-2">Votehead</th>
+                    <th className="border p-2">Amount</th>
+                    <th className="border p-2">Description</th>
+                    <th className="border p-2">Day</th>
+                    <th className="border p-2">User</th>
+                    {userName === 'Admin' && <th className="border p-2">Actions</th>}
+                  </tr>
+                </thead>
+                <tbody>
+                  {groupedIncomes[month].map((income) => (
+                    <tr key={income._id} className="hover:bg-blue-50 transition">
+                      <td className="border p-2">{income.votehead?.name || 'N/A'}</td>
+                      <td className="border p-2">{income.amount}</td>
+                      <td className="border p-2">{income.description}</td>
+                      <td className="border p-2">
+                        {new Date(income.createdAt).toLocaleDateString('en-US', {
+                          weekday: 'short', day: 'numeric', month: 'short',
+                        })}
+                      </td>
+                      <td className="border p-2">{income.user || 'Unknown'}</td>
+                      {userName === 'Admin' && (
+                        <td className="border p-2 flex justify-center space-x-2">
+                          <button
+                            onClick={() => {
+                              setForm({
+                                votehead: income.votehead?._id || '',
+                                amount: income.amount,
+                                description: income.description,
+                                year: income.year,
+                              });
+                              setEditId(income._id);
+                            }}
+                            className="bg-yellow-500 text-white py-1 px-3 rounded hover:bg-yellow-600"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDelete(income._id)}
+                            className="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600"
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      )}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        ))}
+
+        {/* Grand Total */}
+        <div className="mt-6 bg-blue-300 p-3 text-center font-bold rounded-lg shadow-lg">
+          Grand Total: {grandTotal}
+        </div>
       </div>
     </div>
   );

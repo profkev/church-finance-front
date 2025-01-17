@@ -4,19 +4,41 @@ import MainLayout from './layouts/MainLayout';
 import Dashboard from './pages/Dashboard';
 import Income from './pages/Income';
 import Login from './pages/Login';
-
+import VoteheadManagement from './pages/VoteheadManagement';
 
 const App = () => {
   return (
     <Router>
-      <MainLayout>
-        <Routes>
+      <Routes>
+        {/* Public Login Page */}
         <Route path="/login" element={<Login />} />
 
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/income" element={<Income />} />
-        </Routes>
-      </MainLayout>
+        {/* Protected Pages with MainLayout */}
+        <Route
+          path="/"
+          element={
+            <MainLayout>
+              <Dashboard />
+            </MainLayout>
+          }
+        />
+        <Route
+          path="/income"
+          element={
+            <MainLayout>
+              <Income />
+            </MainLayout>
+          }
+        />
+        <Route
+          path="/voteheads"
+          element={
+            <MainLayout>
+              <VoteheadManagement />
+            </MainLayout>
+          }
+        />
+      </Routes>
     </Router>
   );
 };

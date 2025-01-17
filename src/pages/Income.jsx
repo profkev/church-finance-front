@@ -123,12 +123,9 @@ const Income = () => {
   const grandTotal = incomes.reduce((sum, income) => sum + income.amount, 0);
 
   return (
-    <div className="flex flex-col lg:flex-row">
-      {/* Sidebar Space */}
-      <div className="hidden lg:block w-64 bg-gray-200 min-h-screen"></div>
-
+    <div className="flex flex-col lg:flex-row h-screen">
       {/* Main Content */}
-      <div className="flex-grow p-4">
+      <div className="flex-grow overflow-y-auto p-4 bg-gray-50">
         <h1 className="text-3xl font-bold mb-6 text-center text-blue-700">Income Management</h1>
 
         {/* Income Form */}

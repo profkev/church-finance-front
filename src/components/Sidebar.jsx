@@ -45,7 +45,7 @@ const Sidebar = () => {
       {isMobile && (
         <button
           onClick={toggleSidebar}
-          className={`p-3 text-white bg-teal-700 hover:bg-teal-500 focus:outline-none fixed top-0 left-0 w-full h-12 flex items-center justify-center z-50 shadow-md transition duration-300`}
+          className="p-3 text-white bg-teal-700 hover:bg-teal-500 focus:outline-none fixed top-0 left-0 w-full h-12 flex items-center justify-center z-50 shadow-md transition duration-300"
           aria-label="Toggle Sidebar"
         >
           <FaChevronDown size={24} />
@@ -54,9 +54,7 @@ const Sidebar = () => {
 
       {/* Sidebar */}
       <div
-        className={`flex flex-col ${isMobile ? 'fixed top-12 left-0 h-full w-64 bg-gradient-to-b from-teal-700 to-indigo-900 z-40 text-white shadow-lg transform transition-transform duration-300'
-          : 'min-h-screen w-64 bg-gradient-to-b from-teal-700 to-indigo-900 text-white shadow-lg relative'}
-          ${collapsed && isMobile ? '-translate-x-full' : 'translate-x-0'}`}
+        className={`flex flex-col ${isMobile ? 'fixed top-12 left-0 h-[calc(100vh-48px)] w-64 bg-gradient-to-b from-teal-700 to-indigo-900 z-40 text-white shadow-lg transform transition-transform duration-300' : 'min-h-screen w-64 bg-gradient-to-b from-teal-700 to-indigo-900 text-white shadow-lg relative'} ${collapsed && isMobile ? '-translate-x-full' : 'translate-x-0'}`}
       >
         {/* Logo Section */}
         <div className="flex items-center justify-center py-6 border-b border-indigo-700">

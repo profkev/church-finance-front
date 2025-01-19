@@ -5,6 +5,9 @@ import Dashboard from './pages/Dashboard';
 import Income from './pages/Income';
 import Login from './pages/Login';
 import VoteheadManagement from './pages/VoteheadManagement';
+import Expenditure from './pages/Expenditure';
+import CategoryManagement from './pages/CategoryManagement';
+import Report from './pages/Report';
 
 const App = () => {
   return (
@@ -31,6 +34,14 @@ const App = () => {
           }
         />
         <Route
+          path="/expenditure"
+          element={
+            <MainLayout>
+              <Expenditure />
+            </MainLayout>
+          }
+          />
+        <Route
           path="/voteheads"
           element={
             <MainLayout>
@@ -38,8 +49,27 @@ const App = () => {
             </MainLayout>
           }
         />
+        <Route
+          path="/categories"
+          element={
+            <MainLayout>
+              <CategoryManagement />
+            </MainLayout>
+          }
+        />
+        <Route
+          path="/reports"
+          element={
+            <MainLayout>
+              <Report />
+            </MainLayout>
+          }
+          />
       </Routes>
+
     </Router>
+  
+
   );
 };
 

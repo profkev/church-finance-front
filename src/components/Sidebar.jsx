@@ -21,6 +21,9 @@ const Sidebar = () => {
     { path: '/expenditure', label: 'Expenditure', icon: <FaChartPie /> },
     { path: '/reports', label: 'Reports', icon: <FaClipboardList /> },
     { path: '/voteheads', label: 'Voteheads', icon: <FaClipboardList /> },
+    { path: '/Categories', label: 'Categories', icon: <FaClipboardList /> },
+    
+
   ];
 
   // Handle screen size change

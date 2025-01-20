@@ -8,6 +8,7 @@ import VoteheadManagement from './pages/VoteheadManagement';
 import Expenditure from './pages/Expenditure';
 import CategoryManagement from './pages/CategoryManagement';
 import Report from './pages/Report';
+import Visualization from './pages/Visualization';
 
 const App = () => {
   return (
@@ -40,7 +41,7 @@ const App = () => {
               <Expenditure />
             </MainLayout>
           }
-          />
+        />
         <Route
           path="/voteheads"
           element={
@@ -64,12 +65,17 @@ const App = () => {
               <Report />
             </MainLayout>
           }
-          />
+        />
+        <Route
+          path="/visualization"
+          element={
+            <MainLayout>
+              <Visualization />
+            </MainLayout>
+          }
+        />
       </Routes>
-
     </Router>
-  
-
   );
 };
 

@@ -35,7 +35,7 @@ const Income = () => {
       });
       setVoteheads(response.data.voteheads);
     } catch (error) {
-      console.error('Error fetching voteheads:', error.response?.data?.message || error.message);
+      console.error('Error fetching income:', error.response?.data?.message || error.message);
     }
   };
 
@@ -137,7 +137,7 @@ const Income = () => {
               className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             >
-              <option value="">Select Votehead</option>
+              <option value="">Select Income</option>
               {voteheads.map((votehead) => (
                 <option key={votehead._id} value={votehead._id}>{votehead.name}</option>
               ))}
@@ -183,7 +183,7 @@ const Income = () => {
               <table className="w-full border-collapse border border-gray-300 mt-3 rounded-md overflow-hidden">
                 <thead>
                   <tr className="bg-blue-300">
-                    <th className="border p-2">Votehead</th>
+                    <th className="border p-2">Income</th>
                     <th className="border p-2">Amount</th>
                     <th className="border p-2">Description</th>
                     <th className="border p-2">Day</th>

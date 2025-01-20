@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { FaUserCircle, FaSignOutAlt, FaHome, FaFileInvoiceDollar, FaChartPie, FaClipboardList, FaChevronDown } from 'react-icons/fa';
+import { FaUserCircle, FaSignOutAlt, FaHome, FaFileInvoiceDollar, FaChartPie, FaClipboardList, FaChevronDown, FaChartBar } from 'react-icons/fa';
 
 const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(true); // Sidebar toggle state
@@ -20,8 +20,10 @@ const Sidebar = () => {
     { path: '/income', label: 'Income', icon: <FaFileInvoiceDollar /> },
     { path: '/expenditure', label: 'Expenditure', icon: <FaChartPie /> },
     { path: '/reports', label: 'Reports', icon: <FaClipboardList /> },
-    { path: '/voteheads', label: 'Voteheads', icon: <FaClipboardList /> },
-    { path: '/Categories', label: 'Categories', icon: <FaClipboardList /> },
+    { path: '/voteheads', label: 'Income Manager', icon: <FaClipboardList /> },
+    { path: '/Categories', label: 'Expenditure Manager', icon: <FaClipboardList /> },
+    { path: '/Visualization', label: 'Visuals', icon: <FaChartBar /> },
+
     
 
   ];

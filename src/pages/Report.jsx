@@ -46,7 +46,6 @@ const Reports = () => {
     }
   };
 
-  // Load data based on active section
   useEffect(() => {
     if (activeSection === 'original') {
       fetchOriginalData();
@@ -55,11 +54,9 @@ const Reports = () => {
     }
   }, [activeSection, filterType, combinedFilterType, month, year]);
 
-  // Download original data (Excel or PDF)
 // Download original data (Excel or PDF)
 const downloadOriginalData = async (format) => {
     try {
-      // Ensure endpoint matches backend routes
       const endpoint = format === 'pdf' ? 'download/original/pdf' : 'download/original';
       const response = await API.get(`/api/reports/${endpoint}`, {
         params: { type: filterType },

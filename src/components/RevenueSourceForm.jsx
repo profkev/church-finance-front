@@ -104,7 +104,7 @@ const RevenueSourceForm = () => {
       <div className="bg-blue-50 p-4 shadow-md">
         <h1 className="text-2xl font-bold text-blue-700">Revenue Source Management</h1>
       </div>
-      <div className="flex-grow overflow-y-auto">
+      <div className="flex-grow overflow-y-auto mt-16 sm:mt-0">
         <div className="w-full max-w-md sm:max-w-2xl md:max-w-4xl mx-auto px-2">
           {/* Error and Success Messages */}
           {error && <div className="bg-red-100 text-red-700 p-3 rounded mb-4">{error}</div>}

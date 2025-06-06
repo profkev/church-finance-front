@@ -55,15 +55,20 @@ const Sidebar = () => {
 
   return (
     <>
-      {/* Mobile Floating Hamburger Button */}
+      {/* Mobile Navbar with Hamburger Button */}
       {isMobile && !sidebarOpen && (
-        <button
-          onClick={toggleSidebar}
-          className="fixed top-4 left-4 z-50 bg-teal-700 hover:bg-teal-500 text-white rounded-full p-3 shadow-lg focus:outline-none transition duration-300"
-          aria-label="Open Sidebar"
-        >
-          <FaBars size={22} />
-        </button>
+        <div className="fixed top-0 left-0 w-full h-16 bg-white shadow flex items-center px-4 z-50">
+          <button
+            onClick={toggleSidebar}
+            className="text-teal-700 hover:text-teal-500 rounded-full p-2 focus:outline-none transition duration-300"
+            aria-label="Open Sidebar"
+          >
+            <FaBars size={24} />
+          </button>
+          <div className="flex-1 flex justify-center">
+            <span className="font-bold text-lg text-teal-700">ACK Kamune</span>
+          </div>
+        </div>
       )}
       {/* Backdrop for mobile sidebar */}
       {isMobile && sidebarOpen && (

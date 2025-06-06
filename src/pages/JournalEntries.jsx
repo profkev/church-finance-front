@@ -100,7 +100,7 @@ const JournalEntries = () => {
   }
 
   return (
-    <div className="bg-white shadow-md rounded p-6 w-full max-w-6xl mx-auto">
+    <div className="bg-white shadow-md rounded p-6 w-full max-w-6xl mx-auto mt-16 sm:mt-0">
       <h1 className="text-2xl font-bold mb-4">Journal Entry Management</h1>
       {error && <div className="bg-red-100 text-red-700 p-3 rounded mb-4">{error}</div>}
       {success && <div className="bg-green-100 text-green-700 p-3 rounded mb-4">{success}</div>}

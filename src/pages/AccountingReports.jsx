@@ -434,7 +434,7 @@ const AccountingReports = () => {
   };
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="p-6 bg-gray-50 min-h-screen mt-16 sm:mt-0">
       <h1 className="text-3xl font-bold text-center mb-6">Accounting Reports</h1>
 
       <div className="mb-6 bg-white p-4 rounded-lg shadow">

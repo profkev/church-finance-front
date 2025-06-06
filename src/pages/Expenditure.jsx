@@ -150,7 +150,7 @@ const Expenditure = () => {
   return (
     <div className="flex flex-col lg:flex-row h-screen">
       {/* Main Content */}
-      <div className="flex-grow overflow-y-auto bg-gradient-to-r from-blue-50 to-blue-100 pb-24">
+      <div className="flex-grow overflow-y-auto bg-gradient-to-r from-blue-50 to-blue-100 pb-24 mt-16 sm:mt-0">
         <div className="w-full max-w-md sm:max-w-2xl md:max-w-4xl mx-auto px-2">
           {/* Form Section - Always visible */}
           <div className="bg-white p-4 rounded-lg shadow-md mb-4">

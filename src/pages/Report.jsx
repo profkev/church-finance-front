@@ -112,12 +112,10 @@ const Report = () => {
   };
   
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          Reports
-        </Typography>
-        <Grid container spacing={2} sx={{ mb: 2 }}>
+    <div className="w-full px-2 md:px-0 md:max-w-4xl mx-auto mt-16 sm:mt-0">
+      <div className="bg-white rounded-lg shadow p-4 md:p-8">
+        <h1 className="text-2xl font-bold text-blue-700 mb-4">Reports</h1>
+        <div className="grid grid-cols-2 gap-2 mb-4">
           <Grid item xs={12} sm={6}>
             <Button
               variant={activeSection === 'original' ? 'contained' : 'outlined'}
@@ -136,9 +134,9 @@ const Report = () => {
             Combined Data
             </Button>
           </Grid>
-        </Grid>
+        </div>
 
-        <Grid container spacing={2} sx={{ mb: 3 }}>
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 mb-4">
           <Grid item xs={12} sm={3}>
             <FormControl fullWidth>
               <InputLabel>Report Type</InputLabel>
@@ -192,76 +190,62 @@ const Report = () => {
               </Tooltip>
             </Box>
           </Grid>
-        </Grid>
+        </div>
 
         {activeSection === 'original' ? (
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Date</TableCell>
-                  <TableCell>{filterType === 'income' ? 'Revenue Source' : 'Votehead'}</TableCell>
-                  <TableCell>Amount</TableCell>
-                  <TableCell>Description</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
+          <div className="overflow-x-auto mt-4">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-blue-100">
+                <tr>
+                  <th className="px-4 py-2 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Date</th>
+                  <th className="px-4 py-2 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">{filterType === 'income' ? 'Revenue Source' : 'Votehead'}</th>
+                  <th className="px-4 py-2 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Amount</th>
+                  <th className="px-4 py-2 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider">Description</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
                 {data.map((record) => (
-                  <TableRow key={record._id}>
-                    <TableCell>{moment(record.createdAt).format('MMM D, YYYY')}</TableCell>
-                    <TableCell>
-                      {filterType === 'income'
-                        ? record.revenueSource?.name || 'N/A'
-                        : record.votehead?.name || 'N/A'}
-                    </TableCell>
-                    <TableCell>{record.amount.toFixed(2)}</TableCell>
-                    <TableCell>{record.description || 'N/A'}</TableCell>
-                  </TableRow>
+                  <tr key={record._id}>
+                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-700">{moment(record.createdAt).format('MMM D, YYYY')}</td>
+                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-700">{filterType === 'income' ? record.revenueSource?.name || 'N/A' : record.votehead?.name || 'N/A'}</td>
+                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-700">{record.amount.toFixed(2)}</td>
+                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-700">{record.description || 'N/A'}</td>
+                  </tr>
                 ))}
-                <TableRow>
-                  <TableCell colSpan={2} />
-                  <TableCell>
-                    <strong>
-                      Total: {data.reduce((sum, record) => sum + record.amount, 0).toFixed(2)}
-                    </strong>
-                  </TableCell>
-                  <TableCell />
-                </TableRow>
-              </TableBody>
-            </Table>
-          </TableContainer>
+                <tr className="bg-blue-50">
+                  <td colSpan={2} />
+                  <td className="px-4 py-2 font-bold text-blue-800">Total: {data.reduce((sum, record) => sum + record.amount, 0).toFixed(2)}</td>
+                  <td />
+                </tr>
+              </tbody>
+            </table>
+          </div>
         ) : (
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>{combinedFilterType === 'income' ? 'Revenue Source' : 'Votehead'}</TableCell>
-                  <TableCell>Total Amount</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
+          <div className="overflow-x-auto mt-4">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-purple-100">
+                <tr>
+                  <th className="px-4 py-2 text-left text-xs font-semibold text-purple-700 uppercase tracking-wider">{combinedFilterType === 'income' ? 'Revenue Source' : 'Votehead'}</th>
+                  <th className="px-4 py-2 text-left text-xs font-semibold text-purple-700 uppercase tracking-wider">Total Amount</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
                 {combinedData.map((item) => (
-                  <TableRow key={item.name}>
-                    <TableCell>{item.name}</TableCell>
-                    <TableCell>{item.totalAmount.toFixed(2)}</TableCell>
-                  </TableRow>
+                  <tr key={item.name}>
+                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-700">{item.name}</td>
+                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-700">{item.totalAmount.toFixed(2)}</td>
+                  </tr>
                 ))}
-                <TableRow>
-                  <TableCell>
-                    <strong>Total</strong>
-                  </TableCell>
-                  <TableCell>
-                    <strong>
-                      {combinedData.reduce((sum, item) => sum + item.totalAmount, 0).toFixed(2)}
-                    </strong>
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </TableContainer>
+                <tr className="bg-purple-50">
+                  <td className="px-4 py-2 font-bold text-purple-800">Total</td>
+                  <td className="px-4 py-2 font-bold text-purple-800">{combinedData.reduce((sum, item) => sum + item.totalAmount, 0).toFixed(2)}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         )}
-      </Box>
-    </Container>
+      </div>
+    </div>
   );
 };
 

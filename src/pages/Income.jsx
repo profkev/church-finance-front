@@ -3,12 +3,14 @@ import API from '../utils/apiConfig';
 
 const Income = () => {
   const [incomes, setIncomes] = useState([]);
-  const [voteheads, setVoteheads] = useState([]);
+  const [revenueSources, setRevenueSources] = useState([]);
+  const [accounts, setAccounts] = useState([]);
   const [form, setForm] = useState({
-    votehead: '',
+    revenueSource: '',
     amount: '',
     description: '',
     year: new Date().getFullYear(),
+    assetAccount: '',
   });
   const [editId, setEditId] = useState(null);
   const [error, setError] = useState('');
@@ -27,15 +29,27 @@ const Income = () => {
     }
   };
 
-  const fetchVoteheads = async () => {
+  const fetchRevenueSources = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await API.get('/api/voteheads', {
+      const response = await API.get('/api/revenue-sources', {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setVoteheads(response.data.voteheads);
+      setRevenueSources(response.data.revenueSources);
     } catch (error) {
-      console.error('Error fetching income:', error.response?.data?.message || error.message);
+      console.error('Error fetching revenue sources:', error.response?.data?.message || error.message);
+    }
+  };
+
+  const fetchAccounts = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await API.get('/api/accounts', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setAccounts(response.data.accounts.filter(a => a.isActive && a.type === 'asset'));
+    } catch (error) {
+      console.error('Error fetching accounts:', error.response?.data?.message || error.message);
     }
   };
 
@@ -75,11 +89,12 @@ const Income = () => {
         });
       }
 
-      setForm({ votehead: '', amount: '', description: '', year: new Date().getFullYear() });
+      setForm({ revenueSource: '', amount: '', description: '', year: new Date().getFullYear(), assetAccount: '' });
       fetchIncomes();
     } catch (error) {
-      console.error('Error saving income:', error.response?.data?.message || error.message);
-      setError(error.response?.data?.message || 'An error occurred while saving the income.');
+      const errMsg = error.response?.data?.message || error.message;
+      setError(errMsg.replace(/revenueSource/gi, 'revenue source'));
+      console.error('Error saving income:', errMsg);
     } finally {
       setLoading(false);
     }
@@ -114,7 +129,8 @@ const Income = () => {
 
   useEffect(() => {
     fetchIncomes();
-    fetchVoteheads();
+    fetchRevenueSources();
+    fetchAccounts();
     fetchUserName();
   }, []);
 
@@ -132,14 +148,26 @@ const Income = () => {
         <form className="mb-8" onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <select
-              value={form.votehead}
-              onChange={(e) => setForm({ ...form, votehead: e.target.value })}
+              value={form.revenueSource}
+              onChange={(e) => setForm({ ...form, revenueSource: e.target.value })}
               className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             >
-              <option value="">Select Income</option>
-              {voteheads.map((votehead) => (
-                <option key={votehead._id} value={votehead._id}>{votehead.name}</option>
+              <option value="">Select Revenue Source</option>
+              {revenueSources.map((source) => (
+                <option key={source._id} value={source._id}>{source.name}</option>
+              ))}
+            </select>
+
+            <select
+              value={form.assetAccount}
+              onChange={(e) => setForm({ ...form, assetAccount: e.target.value })}
+              className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            >
+              <option value="">Select Account (Cash/Bank)</option>
+              {accounts.map((account) => (
+                <option key={account._id} value={account._id}>{account.code} - {account.name}</option>
               ))}
             </select>
 
@@ -183,7 +211,8 @@ const Income = () => {
               <table className="w-full border-collapse border border-gray-300 mt-3 rounded-md overflow-hidden">
                 <thead>
                   <tr className="bg-blue-300">
-                    <th className="border p-2">Income</th>
+                    <th className="border p-2">Revenue Source</th>
+                    <th className="border p-2">Account</th>
                     <th className="border p-2">Amount</th>
                     <th className="border p-2">Description</th>
                     <th className="border p-2">Day</th>
@@ -194,7 +223,8 @@ const Income = () => {
                 <tbody>
                   {groupedIncomes[month].map((income) => (
                     <tr key={income._id} className="hover:bg-blue-50 transition">
-                      <td className="border p-2">{income.votehead?.name || 'N/A'}</td>
+                      <td className="border p-2">{income.revenueSource?.name || 'N/A'}</td>
+                      <td className="border p-2">{accounts.find(a => a._id === income.assetAccount)?.name || 'N/A'}</td>
                       <td className="border p-2">{income.amount}</td>
                       <td className="border p-2">{income.description}</td>
                       <td className="border p-2">
@@ -208,10 +238,11 @@ const Income = () => {
                           <button
                             onClick={() => {
                               setForm({
-                                votehead: income.votehead?._id || '',
+                                revenueSource: income.revenueSource?._id || '',
                                 amount: income.amount,
                                 description: income.description,
                                 year: income.year,
+                                assetAccount: income.assetAccount || '',
                               });
                               setEditId(income._id);
                             }}

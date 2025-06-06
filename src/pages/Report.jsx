@@ -1,46 +1,76 @@
 import React, { useState, useEffect } from 'react';
-import API from '../utils/apiConfig';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import moment from 'moment';
+import {
+  Box,
+  Button,
+  Container,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Typography,
+  Grid,
+  TextField,
+  IconButton,
+  Tooltip,
+} from '@mui/material';
+import {
+  Download as DownloadIcon,
+  PictureAsPdf as PdfIcon,
+  TableChart as ExcelIcon,
+} from '@mui/icons-material';
 
-const Reports = () => {
-  const [filterType, setFilterType] = useState('income'); // Original data filter type
-  const [combinedFilterType, setCombinedFilterType] = useState('income'); // Combined data filter type
+const Report = () => {
+  const navigate = useNavigate();
+  const [filterType, setFilterType] = useState('income');
+  const [combinedFilterType, setCombinedFilterType] = useState('income');
   const [data, setData] = useState([]);
   const [combinedData, setCombinedData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [activeSection, setActiveSection] = useState('original'); // Section switch: original or combined
-  const [month, setMonth] = useState('01');
-  const [year, setYear] = useState(new Date().getFullYear().toString());
-  const [isExpanded, setIsExpanded] = useState(true); // Toggle expand/collapse
+  const [activeSection, setActiveSection] = useState('original');
+  const [startDate, setStartDate] = useState(moment().startOf('year').format('YYYY-MM-DD'));
+  const [endDate, setEndDate] = useState(moment().format('YYYY-MM-DD'));
 
-  // Fetch original data
   const fetchOriginalData = async () => {
     try {
       setLoading(true);
-      const response = await API.get(`/api/reports`, {
-        params: { type: filterType },
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      const response = await axios.get('/api/reports/reports', {
+        params: {
+          type: filterType,
+          startDate,
+          endDate,
+        },
       });
-      setData(Array.isArray(response.data.records) ? response.data.records : []);
+      setData(response.data.records);
     } catch (error) {
-      console.error('Error fetching original data:', error.message);
-      setData([]);
+      console.error('Error fetching data:', error);
     } finally {
       setLoading(false);
     }
   };
   
-  // Fetch combined data
   const fetchCombinedData = async () => {
     try {
       setLoading(true);
-      const response = await API.get(`/api/reports/aggregated`, {
-        params: { type: combinedFilterType, month, year },
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      const response = await axios.get('/api/reports/aggregated-reports', {
+        params: {
+          type: combinedFilterType,
+          startDate,
+          endDate,
+        },
       });
-      setCombinedData(Array.isArray(response.data.aggregatedData) ? response.data.aggregatedData : []);
+      setCombinedData(response.data.aggregatedData);
     } catch (error) {
-      console.error('Error fetching combined data:', error.message);
-      setCombinedData([]);
+      console.error('Error fetching combined data:', error);
     } finally {
       setLoading(false);
     }
@@ -52,231 +82,187 @@ const Reports = () => {
     } else {
       fetchCombinedData();
     }
-  }, [activeSection, filterType, combinedFilterType, month, year]);
+  }, [activeSection, filterType, combinedFilterType, startDate, endDate]);
 
-// Download original data (Excel or PDF)
-const downloadOriginalData = async (format) => {
+  const handleDownload = async (format) => {
     try {
-      const endpoint = format === 'pdf' ? 'download/original/pdf' : 'download/original';
-      const response = await API.get(`/api/reports/${endpoint}`, {
-        params: { type: filterType },
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-        responseType: 'blob', // Handle file blob
+      const endpoint = activeSection === 'original' ? '/api/reports/download-report' : '/api/reports/download-aggregated-report';
+      const type = activeSection === 'original' ? filterType : combinedFilterType;
+      
+      const response = await axios.get(endpoint, {
+        params: {
+          type,
+          format,
+          startDate,
+          endDate,
+        },
+        responseType: 'blob',
       });
   
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', `original_data.${format}`);
+      link.setAttribute('download', `${type}_${activeSection}_report.${format}`);
       document.body.appendChild(link);
       link.click();
-  
-      // Cleanup
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
+      link.remove();
     } catch (error) {
-      console.error('Error downloading original data:', error.message);
+      console.error('Error downloading report:', error);
     }
   };
-  
-  const downloadCombinedData = async (format) => {
-    try {
-      const endpoint = format === 'pdf' ? 'download/combined/pdf' : 'download/combined';
-      const response = await API.get(`/api/reports/${endpoint}`, {
-        params: { type: combinedFilterType, month, year },
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-        responseType: 'blob', // Handle file blob
-      });
-  
-      const extension = format === 'pdf' ? 'pdf' : 'xlsx';
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `combined_data.${extension}`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error(`Error downloading combined ${format.toUpperCase()}:`, error.message);
-    }
-  };
-  
   
   return (
-    <div className="flex flex-col h-screen">
-      <div className="p-6 bg-gray-50 flex-shrink-0">
-        <h1 className="text-3xl font-bold text-center mb-6">Report Management</h1>
-
-        {/* Section Tabs */}
-        <div className="mb-6 flex justify-center space-x-4">
-          <button
-            className={`py-2 px-4 rounded ${activeSection === 'original' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}
+    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          Reports
+        </Typography>
+        <Grid container spacing={2} sx={{ mb: 2 }}>
+          <Grid item xs={12} sm={6}>
+            <Button
+              variant={activeSection === 'original' ? 'contained' : 'outlined'}
             onClick={() => setActiveSection('original')}
+              fullWidth
           >
             Original Data
-          </button>
-          <button
-            className={`py-2 px-4 rounded ${activeSection === 'combined' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}
+            </Button>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <Button
+              variant={activeSection === 'combined' ? 'contained' : 'outlined'}
             onClick={() => setActiveSection('combined')}
+              fullWidth
           >
             Combined Data
-          </button>
-        </div>
+            </Button>
+          </Grid>
+        </Grid>
 
-        {/* Expand/Collapse Filters */}
-        <div className="mb-6 text-right">
-          <button
-            className="text-blue-500 underline"
-            onClick={() => setIsExpanded(!isExpanded)}
-          >
-            {isExpanded ? 'Collapse Filters' : 'Expand Filters'}
-          </button>
-        </div>
-      </div>
-
-      <div className="flex-grow overflow-y-auto p-6 bg-gray-100">
-        {isExpanded && (
-          <div className="mb-6 bg-white p-4 shadow rounded">
-            {activeSection === 'original' ? (
-              <div>
-                <h2 className="text-lg font-semibold mb-4">Filter Original Reports</h2>
-                <select
-                  value={filterType}
-                  onChange={(e) => setFilterType(e.target.value)}
-                  className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-gray-500"
-                >
-                  <option value="income">Income</option>
-                  <option value="expenditure">Expenditure</option>
-                </select>
-              </div>
-            ) : (
-              <div>
-                <h2 className="text-lg font-semibold mb-4">Filter Combined Reports</h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <select
-                    value={combinedFilterType}
-                    onChange={(e) => setCombinedFilterType(e.target.value)}
-                    className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-gray-500"
-                  >
-                    <option value="income">Income</option>
-                    <option value="expenditure">Expenditure</option>
-                  </select>
-                  <input
-                    type="month"
-                    value={`${year}-${month}`}
+        <Grid container spacing={2} sx={{ mb: 3 }}>
+          <Grid item xs={12} sm={3}>
+            <FormControl fullWidth>
+              <InputLabel>Report Type</InputLabel>
+              <Select
+                value={activeSection === 'original' ? filterType : combinedFilterType}
                     onChange={(e) => {
-                      const [y, m] = e.target.value.split('-');
-                      setYear(y);
-                      setMonth(m);
-                    }}
-                    className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-gray-500"
-                  />
-                </div>
-              </div>
-            )}
-          </div>
+                  if (activeSection === 'original') {
+                    setFilterType(e.target.value);
+                  } else {
+                    setCombinedFilterType(e.target.value);
+                  }
+                }}
+                label="Report Type"
+              >
+                <MenuItem value="income">Income</MenuItem>
+                <MenuItem value="expenditure">Expenditure</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={3}>
+            <TextField
+              fullWidth
+              type="date"
+              label="Start Date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              InputLabelProps={{ shrink: true }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={3}>
+            <TextField
+              fullWidth
+              type="date"
+              label="End Date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              InputLabelProps={{ shrink: true }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={3}>
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              <Tooltip title="Download PDF">
+                <IconButton onClick={() => handleDownload('pdf')} color="primary">
+                  <PdfIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Download Excel">
+                <IconButton onClick={() => handleDownload('xlsx')} color="primary">
+                  <ExcelIcon />
+                </IconButton>
+              </Tooltip>
+            </Box>
+          </Grid>
+        </Grid>
+
+        {activeSection === 'original' ? (
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Date</TableCell>
+                  <TableCell>{filterType === 'income' ? 'Revenue Source' : 'Votehead'}</TableCell>
+                  <TableCell>Amount</TableCell>
+                  <TableCell>Description</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {data.map((record) => (
+                  <TableRow key={record._id}>
+                    <TableCell>{moment(record.createdAt).format('MMM D, YYYY')}</TableCell>
+                    <TableCell>
+                      {filterType === 'income'
+                        ? record.revenueSource?.name || 'N/A'
+                        : record.votehead?.name || 'N/A'}
+                    </TableCell>
+                    <TableCell>{record.amount.toFixed(2)}</TableCell>
+                    <TableCell>{record.description || 'N/A'}</TableCell>
+                  </TableRow>
+                ))}
+                <TableRow>
+                  <TableCell colSpan={2} />
+                  <TableCell>
+                    <strong>
+                      Total: {data.reduce((sum, record) => sum + record.amount, 0).toFixed(2)}
+                    </strong>
+                  </TableCell>
+                  <TableCell />
+                </TableRow>
+              </TableBody>
+            </Table>
+          </TableContainer>
+        ) : (
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>{combinedFilterType === 'income' ? 'Revenue Source' : 'Votehead'}</TableCell>
+                  <TableCell>Total Amount</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {combinedData.map((item) => (
+                  <TableRow key={item.name}>
+                    <TableCell>{item.name}</TableCell>
+                    <TableCell>{item.totalAmount.toFixed(2)}</TableCell>
+                  </TableRow>
+                ))}
+                <TableRow>
+                  <TableCell>
+                    <strong>Total</strong>
+                  </TableCell>
+                  <TableCell>
+                    <strong>
+                      {combinedData.reduce((sum, item) => sum + item.totalAmount, 0).toFixed(2)}
+                    </strong>
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </TableContainer>
         )}
-
-        {/* Data Table */}
-        <div className="bg-white p-4 shadow rounded">
-          <h2 className="text-lg font-semibold mb-4">
-            {activeSection === 'original' ? 'Preview Original Data' : 'Preview Combined Data'}
-          </h2>
-          {loading ? (
-            <p>Loading...</p>
-          ) : activeSection === 'original' ? (
-            data.length === 0 ? (
-              <p>No data available for the selected filter.</p>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse border border-gray-300">
-                  <thead>
-                    <tr className="bg-gray-200">
-                      <th className="border p-2">ID</th>
-                      <th className="border p-2">Votehead</th>
-                      <th className="border p-2">Amount</th>
-                      <th className="border p-2">Description</th>
-                      <th className="border p-2">Year</th>
-                      <th className="border p-2">Created At</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {data.map((item) => (
-                      <tr key={item._id} className="hover:bg-gray-50">
-                        <td className="border p-2">{item._id}</td>
-                        <td className="border p-2">{item.votehead?.name || 'N/A'}</td>
-                        <td className="border p-2">{item.amount}</td>
-                        <td className="border p-2">{item.description}</td>
-                        <td className="border p-2">{item.year}</td>
-                        <td className="border p-2">{new Date(item.createdAt).toLocaleDateString()}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )
-          ) : combinedData.length === 0 ? (
-            <p>No combined data available.</p>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse border border-gray-300">
-                <thead>
-                  <tr className="bg-gray-200">
-                    <th className="border p-2">Name</th>
-                    <th className="border p-2">Total Amount</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {combinedData.map((item, index) => (
-                    <tr key={index} className="hover:bg-gray-50">
-                      <td className="border p-2">{item.name}</td>
-                      <td className="border p-2">{item.totalAmount}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-
-        {/* Actions */}
-        <div className="mt-4 flex space-x-4">
-          {activeSection === 'original' ? (
-            <>
-              <button
-                onClick={() => downloadOriginalData('pdf')}
-                className="bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700"
-              >
-                Download PDF
-              </button>
-              <button
-                onClick={() => downloadOriginalData('excel')}
-                className="bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700"
-              >
-                Download Excel
-              </button>
-            </>
-          ) : (
-            <>
-              <button
-                onClick={() => downloadCombinedData('pdf')}
-                className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
-              >
-                Download PDF
-              </button>
-              <button
-                onClick={() => downloadCombinedData('excel')}
-                className="bg-yellow-600 text-white py-2 px-4 rounded hover:bg-yellow-700"
-              >
-                Download Excel
-              </button>
-            </>
-          )}
-        </div>
-      </div>
-    </div>
+      </Box>
+    </Container>
   );
 };
 
-export default Reports;
+export default Report;

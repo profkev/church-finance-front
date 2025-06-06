@@ -4,18 +4,20 @@ import API from '../utils/apiConfig';
 
 const Expenditure = () => {
   const [expenditures, setExpenditures] = useState([]);
-  const [categories, setCategories] = useState([]);
+  const [accounts, setAccounts] = useState([]);
   const [form, setForm] = useState({
-    category: '',
+    votehead: '',
     amount: '',
     description: '',
     year: new Date().getFullYear(),
+    assetAccount: '',
   });
   const [editId, setEditId] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [collapsedMonths, setCollapsedMonths] = useState({});
   const [userName, setUserName] = useState('');
+  const [voteheads, setVoteheads] = useState([]);
   const navigate = useNavigate();
 
   const fetchExpenditures = async () => {
@@ -30,15 +32,15 @@ const Expenditure = () => {
     }
   };
 
-  const fetchCategories = async () => {
+  const fetchAccounts = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await API.get('/api/categories', {
+      const response = await API.get('/api/accounts', {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setCategories(response.data.categories);
+      setAccounts(response.data.accounts.filter(a => a.isActive && a.type === 'asset'));
     } catch (error) {
-      console.error('Error fetching categories:', error.response?.data?.message || error.message);
+      console.error('Error fetching accounts:', error.response?.data?.message || error.message);
     }
   };
 
@@ -52,6 +54,18 @@ const Expenditure = () => {
     } catch (error) {
       if (error.response?.status === 401) navigate('/login');
       console.error('Error fetching user name:', error.response?.data?.message || error.message);
+    }
+  };
+
+  const fetchVoteheads = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await API.get('/api/voteheads', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setVoteheads(response.data.voteheads);
+    } catch (error) {
+      console.error('Error fetching voteheads:', error.response?.data?.message || error.message);
     }
   };
 
@@ -80,7 +94,7 @@ const Expenditure = () => {
         });
       }
 
-      setForm({ category: '', amount: '', description: '', year: new Date().getFullYear() });
+      setForm({ votehead: '', amount: '', description: '', year: new Date().getFullYear(), assetAccount: '' });
       fetchExpenditures();
     } catch (error) {
       console.error('Error saving expenditure:', error.response?.data?.message || error.message);
@@ -124,8 +138,9 @@ const Expenditure = () => {
       return;
     }
     fetchExpenditures();
-    fetchCategories();
+    fetchAccounts();
     fetchUserName();
+    fetchVoteheads();
   }, [navigate]);
 
   const groupedExpenditures = groupExpendituresByMonth();
@@ -142,14 +157,26 @@ const Expenditure = () => {
         <form className="mb-8" onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <select
-              value={form.category}
-              onChange={(e) => setForm({ ...form, category: e.target.value })}
+              value={form.votehead}
+              onChange={(e) => setForm({ ...form, votehead: e.target.value })}
               className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500"
               required
             >
-              <option value="">Select Category</option>
-              {categories.map((category) => (
-                <option key={category._id} value={category._id}>{category.name}</option>
+              <option value="">Select Votehead</option>
+              {voteheads.map((votehead) => (
+                <option key={votehead._id} value={votehead._id}>{votehead.name}</option>
+              ))}
+            </select>
+
+            <select
+              value={form.assetAccount}
+              onChange={(e) => setForm({ ...form, assetAccount: e.target.value })}
+              className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+              required
+            >
+              <option value="">Select Account (Cash/Bank)</option>
+              {accounts.map((account) => (
+                <option key={account._id} value={account._id}>{account.code} - {account.name}</option>
               ))}
             </select>
 
@@ -193,7 +220,8 @@ const Expenditure = () => {
               <table className="w-full border-collapse border border-gray-300 mt-3 rounded-md overflow-hidden">
                 <thead>
                   <tr className="bg-green-300">
-                    <th className="border p-2">Category</th>
+                    <th className="border p-2">Votehead</th>
+                    <th className="border p-2">Account</th>
                     <th className="border p-2">Amount</th>
                     <th className="border p-2">Description</th>
                     <th className="border p-2">Day</th>
@@ -204,7 +232,8 @@ const Expenditure = () => {
                 <tbody>
                   {groupedExpenditures[month].map((expenditure) => (
                     <tr key={expenditure._id} className="hover:bg-green-50 transition">
-                      <td className="border p-2">{expenditure.category?.name || 'N/A'}</td>
+                      <td className="border p-2">{expenditure.votehead?.name || 'N/A'}</td>
+                      <td className="border p-2">{accounts.find(a => a._id === expenditure.assetAccount)?.name || 'N/A'}</td>
                       <td className="border p-2">{expenditure.amount}</td>
                       <td className="border p-2">{expenditure.description}</td>
                       <td className="border p-2">
@@ -218,10 +247,11 @@ const Expenditure = () => {
                           <button
                             onClick={() => {
                               setForm({
-                                category: expenditure.category?._id || '',
+                                votehead: expenditure.votehead?._id || '',
                                 amount: expenditure.amount,
                                 description: expenditure.description,
                                 year: expenditure.year,
+                                assetAccount: expenditure.assetAccount || '',
                               });
                               setEditId(expenditure._id);
                             }}

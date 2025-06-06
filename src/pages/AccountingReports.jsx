@@ -69,26 +69,28 @@ const AccountingReports = () => {
     
     return (
       <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border border-gray-300">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="px-4 py-2 border">Account Code</th>
-              <th className="px-4 py-2 border">Account Name</th>
-              <th className="px-4 py-2 border">Debit</th>
-              <th className="px-4 py-2 border">Credit</th>
-            </tr>
-          </thead>
-          <tbody>
-            {reportData.trialBalance.map((account, index) => (
-              <tr key={index}>
-                <td className="px-4 py-2 border">{account.accountCode}</td>
-                <td className="px-4 py-2 border">{account.accountName}</td>
-                <td className="px-4 py-2 border text-right">{account.debit.toFixed(2)}</td>
-                <td className="px-4 py-2 border text-right">{account.credit.toFixed(2)}</td>
+        <div className="h-[calc(100vh-400px)] overflow-y-auto">
+          <table className="min-w-full bg-white border border-gray-300">
+            <thead className="bg-gray-100 sticky top-0">
+              <tr>
+                <th className="px-4 py-2 border">Account Code</th>
+                <th className="px-4 py-2 border">Account Name</th>
+                <th className="px-4 py-2 border">Debit</th>
+                <th className="px-4 py-2 border">Credit</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {reportData.trialBalance.map((account, index) => (
+                <tr key={index}>
+                  <td className="px-4 py-2 border">{account.accountCode}</td>
+                  <td className="px-4 py-2 border">{account.accountName}</td>
+                  <td className="px-4 py-2 border text-right">{account.debit.toFixed(2)}</td>
+                  <td className="px-4 py-2 border text-right">{account.credit.toFixed(2)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     );
   };
@@ -334,46 +336,48 @@ const AccountingReports = () => {
     
     return (
       <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border border-gray-300">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="px-4 py-2 border">Date</th>
-              <th className="px-4 py-2 border">Reference</th>
-              <th className="px-4 py-2 border">Description</th>
-              <th className="px-4 py-2 border">Account Code</th>
-              <th className="px-4 py-2 border">Account Name</th>
-              <th className="px-4 py-2 border">Debit</th>
-              <th className="px-4 py-2 border">Credit</th>
-            </tr>
-          </thead>
-          <tbody>
-            {reportData.ledger.map((entry, index) => (
-              <React.Fragment key={index}>
-                {entry.entries.map((line, lineIndex) => (
-                  <tr key={`${index}-${lineIndex}`}>
-                    {lineIndex === 0 && (
-                      <>
-                        <td className="px-4 py-2 border" rowSpan={entry.entries.length}>
-                          {new Date(entry.date).toLocaleDateString()}
-                        </td>
-                        <td className="px-4 py-2 border" rowSpan={entry.entries.length}>
-                          {entry.reference}
-                        </td>
-                        <td className="px-4 py-2 border" rowSpan={entry.entries.length}>
-                          {entry.description}
-                        </td>
-                      </>
-                    )}
-                    <td className="px-4 py-2 border">{line.accountCode}</td>
-                    <td className="px-4 py-2 border">{line.accountName}</td>
-                    <td className="px-4 py-2 border text-right">{line.debit.toFixed(2)}</td>
-                    <td className="px-4 py-2 border text-right">{line.credit.toFixed(2)}</td>
-                  </tr>
-                ))}
-              </React.Fragment>
-            ))}
-          </tbody>
-        </table>
+        <div className="h-[calc(100vh-400px)] overflow-y-auto">
+          <table className="min-w-full bg-white border border-gray-300">
+            <thead className="bg-gray-100 sticky top-0">
+              <tr>
+                <th className="px-4 py-2 border">Date</th>
+                <th className="px-4 py-2 border">Reference</th>
+                <th className="px-4 py-2 border">Description</th>
+                <th className="px-4 py-2 border">Account Code</th>
+                <th className="px-4 py-2 border">Account Name</th>
+                <th className="px-4 py-2 border">Debit</th>
+                <th className="px-4 py-2 border">Credit</th>
+              </tr>
+            </thead>
+            <tbody>
+              {reportData.ledger.map((entry, index) => (
+                <React.Fragment key={index}>
+                  {entry.entries.map((line, lineIndex) => (
+                    <tr key={`${index}-${lineIndex}`}>
+                      {lineIndex === 0 && (
+                        <>
+                          <td className="px-4 py-2 border" rowSpan={entry.entries.length}>
+                            {new Date(entry.date).toLocaleDateString()}
+                          </td>
+                          <td className="px-4 py-2 border" rowSpan={entry.entries.length}>
+                            {entry.reference}
+                          </td>
+                          <td className="px-4 py-2 border" rowSpan={entry.entries.length}>
+                            {entry.description}
+                          </td>
+                        </>
+                      )}
+                      <td className="px-4 py-2 border">{line.accountCode}</td>
+                      <td className="px-4 py-2 border">{line.accountName}</td>
+                      <td className="px-4 py-2 border text-right">{line.debit.toFixed(2)}</td>
+                      <td className="px-4 py-2 border text-right">{line.credit.toFixed(2)}</td>
+                    </tr>
+                  ))}
+                </React.Fragment>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     );
   };
@@ -382,28 +386,30 @@ const AccountingReports = () => {
     if (!reportData?.statement) return null;
     return (
       <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border border-gray-300">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="px-4 py-2 border">Equity Account</th>
-              <th className="px-4 py-2 border">Opening Balance</th>
-              <th className="px-4 py-2 border">Additions</th>
-              <th className="px-4 py-2 border">Withdrawals</th>
-              <th className="px-4 py-2 border">Closing Balance</th>
-            </tr>
-          </thead>
-          <tbody>
-            {reportData.statement.map((item, idx) => (
-              <tr key={idx}>
-                <td className="px-4 py-2 border">{item.accountName}</td>
-                <td className="px-4 py-2 border text-right">{item.opening.toFixed(2)}</td>
-                <td className="px-4 py-2 border text-right">{item.additions.toFixed(2)}</td>
-                <td className="px-4 py-2 border text-right">{item.withdrawals.toFixed(2)}</td>
-                <td className="px-4 py-2 border text-right font-semibold">{item.closing.toFixed(2)}</td>
+        <div className="h-[calc(100vh-400px)] overflow-y-auto">
+          <table className="min-w-full bg-white border border-gray-300">
+            <thead className="bg-gray-100 sticky top-0">
+              <tr>
+                <th className="px-4 py-2 border">Equity Account</th>
+                <th className="px-4 py-2 border">Opening Balance</th>
+                <th className="px-4 py-2 border">Additions</th>
+                <th className="px-4 py-2 border">Withdrawals</th>
+                <th className="px-4 py-2 border">Closing Balance</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {reportData.statement.map((item, idx) => (
+                <tr key={idx}>
+                  <td className="px-4 py-2 border">{item.accountName}</td>
+                  <td className="px-4 py-2 border text-right">{item.opening.toFixed(2)}</td>
+                  <td className="px-4 py-2 border text-right">{item.additions.toFixed(2)}</td>
+                  <td className="px-4 py-2 border text-right">{item.withdrawals.toFixed(2)}</td>
+                  <td className="px-4 py-2 border text-right font-semibold">{item.closing.toFixed(2)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     );
   };

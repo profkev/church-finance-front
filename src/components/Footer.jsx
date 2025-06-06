@@ -2,8 +2,8 @@ import React from 'react';
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-800 text-white pt-4 text-center w-full fixed bottom-0 left-0">
-      <p>&copy; {new Date().getFullYear()} Church Finance Manager. ACK Kamune Parish. All rights reserved.</p>
+    <footer className="bg-white border-t border-gray-200 py-4 text-center w-full mt-auto shadow-inner">
+      <p className="text-gray-600 text-sm">&copy; {new Date().getFullYear()} <span className="font-semibold text-blue-700">Church Finance Manager</span>. ACK Kamune Parish. All rights reserved.</p>
     </footer>
   );
 };

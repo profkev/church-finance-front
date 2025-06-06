@@ -165,34 +165,36 @@ const JournalEntries = () => {
         </form>
       )}
       <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border border-gray-300">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="px-4 py-2 border">Date</th>
-              <th className="px-4 py-2 border">Reference</th>
-              <th className="px-4 py-2 border">Description</th>
-              <th className="px-4 py-2 border">Total Debit</th>
-              <th className="px-4 py-2 border">Total Credit</th>
-              <th className="px-4 py-2 border">Status</th>
-              <th className="px-4 py-2 border">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {entries.map(entry => (
-              <tr key={entry._id} className="hover:bg-gray-50">
-                <td className="px-4 py-2 border">{new Date(entry.date).toLocaleDateString()}</td>
-                <td className="px-4 py-2 border">{entry.reference}</td>
-                <td className="px-4 py-2 border">{entry.description}</td>
-                <td className="px-4 py-2 border text-right">{entry.totalDebit}</td>
-                <td className="px-4 py-2 border text-right">{entry.totalCredit}</td>
-                <td className="px-4 py-2 border capitalize">{entry.status}</td>
-                <td className="px-4 py-2 border">
-                  <button onClick={() => setViewEntry(entry)} className="bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600">View</button>
-                </td>
+        <div className="h-[calc(100vh-400px)] overflow-y-auto">
+          <table className="min-w-full bg-white border border-gray-300">
+            <thead className="bg-gray-100 sticky top-0">
+              <tr>
+                <th className="px-4 py-2 border">Date</th>
+                <th className="px-4 py-2 border">Reference</th>
+                <th className="px-4 py-2 border">Description</th>
+                <th className="px-4 py-2 border">Total Debit</th>
+                <th className="px-4 py-2 border">Total Credit</th>
+                <th className="px-4 py-2 border">Status</th>
+                <th className="px-4 py-2 border">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {entries.map(entry => (
+                <tr key={entry._id} className="hover:bg-gray-50">
+                  <td className="px-4 py-2 border">{new Date(entry.date).toLocaleDateString()}</td>
+                  <td className="px-4 py-2 border">{entry.reference}</td>
+                  <td className="px-4 py-2 border">{entry.description}</td>
+                  <td className="px-4 py-2 border text-right">{entry.totalDebit}</td>
+                  <td className="px-4 py-2 border text-right">{entry.totalCredit}</td>
+                  <td className="px-4 py-2 border capitalize">{entry.status}</td>
+                  <td className="px-4 py-2 border">
+                    <button onClick={() => setViewEntry(entry)} className="bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600">View</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
       {/* View Entry Modal */}
       {viewEntry && (

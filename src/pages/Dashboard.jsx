@@ -200,125 +200,127 @@ const Dashboard = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-grow overflow-y-auto p-2 sm:p-4 md:p-6 bg-gradient-to-r from-blue-50 to-blue-100 pb-24 mt-16 sm:mt-0 mr-8 sm:mr-0">
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 mb-4 sm:mb-6 px-2 sm:px-0">
-          <div className="bg-green-100 p-3 sm:p-6 rounded-lg shadow-md flex flex-col items-center w-full mx-auto text-center">
-            <h2 className="text-lg sm:text-xl font-semibold text-green-700">Total Income</h2>
-            <p className="text-2xl sm:text-3xl font-bold text-green-800 mt-2">KES {totalIncome.toLocaleString()}</p>
-            <p className="text-xs sm:text-sm text-gray-600 mt-1">from {revenueSources.length} Revenue Sources</p>
-          </div>
-          <div className="bg-red-100 p-3 sm:p-6 rounded-lg shadow-md flex flex-col items-center w-full mx-auto text-center">
-            <h2 className="text-lg sm:text-xl font-semibold text-red-700">Total Expenditure</h2>
-            <p className="text-2xl sm:text-3xl font-bold text-red-800 mt-2">KES {totalExpenditure.toLocaleString()}</p>
-            <p className="text-xs sm:text-sm text-gray-600 mt-1">across {voteheads.length} Voteheads</p>
-          </div>
-          <div className={`p-3 sm:p-6 rounded-lg shadow-md flex flex-col items-center w-full mx-auto text-center ${netBalance >= 0 ? 'bg-blue-100' : 'bg-orange-100'}`}> 
-            <h2 className={`text-lg sm:text-xl font-semibold ${netBalance >= 0 ? 'text-blue-700' : 'text-orange-700'}`}>{netBalance >= 0 ? 'Net Surplus' : 'Net Deficit'}</h2>
-            <p className={`text-2xl sm:text-3xl font-bold ${netBalance >= 0 ? 'text-blue-800' : 'text-orange-800'} mt-2`}>KES {netBalance.toLocaleString()}</p>
-            <p className="text-xs sm:text-sm text-gray-600 mt-1">(Income - Expenditure)</p>
-          </div>
-          <div className="bg-gray-100 p-3 sm:p-6 rounded-lg shadow-md flex flex-col items-center w-full mx-auto text-center">
-            <h2 className="text-lg sm:text-xl font-semibold text-gray-700">Sources & Voteheads</h2>
-            <p className="text-base sm:text-lg font-bold text-gray-800 mt-2">{revenueSources.length} Revenue Sources</p>
-            <p className="text-base sm:text-lg font-bold text-gray-800">{voteheads.length} Voteheads</p>
-          </div>
-        </div>
-
-        {/* Charts Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-4 mb-4 sm:mb-6 px-2 sm:px-0">
-          {/* Income Pie Chart */}
-          <div className="bg-white p-2 sm:p-4 rounded-lg shadow-md flex flex-col items-center w-full mx-auto min-w-0 text-center">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-700 mb-2 sm:mb-4">Income by Revenue Source</h3>
-            <div className="w-full max-w-[220px] sm:max-w-[300px] h-[140px] sm:h-[220px] mx-auto">
-              <Pie data={incomePieData} options={{ responsive: true, maintainAspectRatio: false }} />
+      <div className="flex-grow overflow-y-auto bg-gradient-to-r from-blue-50 to-blue-100 pb-24">
+        <div className="w-full max-w-md sm:max-w-2xl md:max-w-4xl mx-auto px-2">
+          {/* Summary Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 mb-4 sm:mb-6">
+            <div className="bg-green-100 p-3 sm:p-6 rounded-lg shadow-md flex flex-col items-center w-full text-center">
+              <h2 className="text-lg sm:text-xl font-semibold text-green-700">Total Income</h2>
+              <p className="text-2xl sm:text-3xl font-bold text-green-800 mt-2">KES {totalIncome.toLocaleString()}</p>
+              <p className="text-xs sm:text-sm text-gray-600 mt-1">from {revenueSources.length} Revenue Sources</p>
+            </div>
+            <div className="bg-red-100 p-3 sm:p-6 rounded-lg shadow-md flex flex-col items-center w-full text-center">
+              <h2 className="text-lg sm:text-xl font-semibold text-red-700">Total Expenditure</h2>
+              <p className="text-2xl sm:text-3xl font-bold text-red-800 mt-2">KES {totalExpenditure.toLocaleString()}</p>
+              <p className="text-xs sm:text-sm text-gray-600 mt-1">across {voteheads.length} Voteheads</p>
+            </div>
+            <div className={`p-3 sm:p-6 rounded-lg shadow-md flex flex-col items-center w-full text-center ${netBalance >= 0 ? 'bg-blue-100' : 'bg-orange-100'}`}> 
+              <h2 className={`text-lg sm:text-xl font-semibold ${netBalance >= 0 ? 'text-blue-700' : 'text-orange-700'}`}>{netBalance >= 0 ? 'Net Surplus' : 'Net Deficit'}</h2>
+              <p className={`text-2xl sm:text-3xl font-bold ${netBalance >= 0 ? 'text-blue-800' : 'text-orange-800'} mt-2`}>KES {netBalance.toLocaleString()}</p>
+              <p className="text-xs sm:text-sm text-gray-600 mt-1">(Income - Expenditure)</p>
+            </div>
+            <div className="bg-gray-100 p-3 sm:p-6 rounded-lg shadow-md flex flex-col items-center w-full text-center">
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-700">Sources & Voteheads</h2>
+              <p className="text-base sm:text-lg font-bold text-gray-800 mt-2">{revenueSources.length} Revenue Sources</p>
+              <p className="text-base sm:text-lg font-bold text-gray-800">{voteheads.length} Voteheads</p>
             </div>
           </div>
-          {/* Expenditure Pie Chart */}
-          <div className="bg-white p-2 sm:p-4 rounded-lg shadow-md flex flex-col items-center w-full mx-auto min-w-0 text-center">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-700 mb-2 sm:mb-4">Expenditure by Votehead</h3>
-            <div className="w-full max-w-[220px] sm:max-w-[300px] h-[140px] sm:h-[220px] mx-auto">
-              <Pie data={expenditurePieData} options={{ responsive: true, maintainAspectRatio: false }} />
+
+          {/* Charts Section */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-4 mb-4 sm:mb-6">
+            {/* Income Pie Chart */}
+            <div className="bg-white p-2 sm:p-4 rounded-lg shadow-md flex flex-col items-center w-full min-w-0 text-center">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-700 mb-2 sm:mb-4">Income by Revenue Source</h3>
+              <div className="w-full max-w-[220px] sm:max-w-[300px] h-[140px] sm:h-[220px] mx-auto">
+                <Pie data={incomePieData} options={{ responsive: true, maintainAspectRatio: false }} />
+              </div>
+            </div>
+            {/* Expenditure Pie Chart */}
+            <div className="bg-white p-2 sm:p-4 rounded-lg shadow-md flex flex-col items-center w-full min-w-0 text-center">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-700 mb-2 sm:mb-4">Expenditure by Votehead</h3>
+              <div className="w-full max-w-[220px] sm:max-w-[300px] h-[140px] sm:h-[220px] mx-auto">
+                <Pie data={expenditurePieData} options={{ responsive: true, maintainAspectRatio: false }} />
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Monthly Trends Bar Chart */}
-        <div className="bg-white p-2 sm:p-4 rounded-lg shadow-md mb-4 sm:mb-6 flex flex-col items-center w-full mx-auto min-w-0 px-2 sm:px-0 text-center">
-          <h3 className="text-base sm:text-lg font-semibold text-gray-700 mb-2 sm:mb-4">Monthly Income & Expenditure Trends</h3>
-          <div className="w-full max-w-[320px] sm:max-w-[500px] h-[160px] sm:h-[260px] mx-auto">
-            <Bar data={monthlyBarData} options={{ responsive: true, maintainAspectRatio: false }} />
-          </div>
-        </div>
-
-        {/* Recent Transactions Table */}
-        <div className="bg-white p-2 sm:p-4 rounded-lg shadow-md mb-4 sm:mb-6 overflow-x-auto w-full px-2 sm:px-0">
-          <h3 className="text-base sm:text-lg font-semibold text-gray-700 mb-2 sm:mb-4">Recent Transactions</h3>
-          <table className="min-w-full border border-gray-300 text-xs sm:text-base">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="px-2 sm:px-4 py-2 border">Date</th>
-                <th className="px-2 sm:px-4 py-2 border">Type</th>
-                <th className="px-2 sm:px-4 py-2 border">Source/Votehead</th>
-                <th className="px-2 sm:px-4 py-2 border">Amount</th>
-                <th className="px-2 sm:px-4 py-2 border">Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              {[...recentIncomes.map(i => ({
-                ...i,
-                type: 'Income',
-                label: i.revenueSource?.name || 'N/A',
-                date: i.createdAt,
-              })),
-              ...recentExpenditures.map(e => ({
-                ...e,
-                type: 'Expenditure',
-                label: e.votehead?.name || 'N/A',
-                date: e.createdAt,
-              }))]
-                .sort((a, b) => new Date(b.date) - new Date(a.date))
-                .slice(0, 10)
-                .map((item, idx) => (
-                  <tr key={idx} className={item.type === 'Income' ? 'bg-green-50' : 'bg-red-50'}>
-                    <td className="px-2 sm:px-4 py-2 border">{new Date(item.date).toLocaleDateString()}</td>
-                    <td className="px-2 sm:px-4 py-2 border font-semibold">{item.type}</td>
-                    <td className="px-2 sm:px-4 py-2 border">{item.label}</td>
-                    <td className="px-2 sm:px-4 py-2 border text-right">{item.amount}</td>
-                    <td className="px-2 sm:px-4 py-2 border">{item.description}</td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Combined Radial Progress */}
-        <div className="bg-white p-2 sm:p-6 rounded-lg shadow-md flex flex-col items-center w-full mx-auto min-w-0 px-2 sm:px-0 text-center">
-          <h3 className="text-base sm:text-lg font-semibold text-gray-700 mb-2 sm:mb-4">Income vs Expenditure</h3>
-          <div className="flex flex-col sm:flex-row justify-around items-center w-full gap-4">
-            <div className="w-24 sm:w-36">
-              <CircularProgressbar
-                value={(totalIncome / (totalIncome + totalExpenditure)) * 100 || 0}
-                text={`${((totalIncome / (totalIncome + totalExpenditure)) * 100 || 0).toFixed(1)}%`}
-                styles={buildStyles({
-                  textSize: '14px',
-                  pathColor: `rgba(75, 192, 192, 0.6)`,
-                  textColor: '#4b4b4b',
-                })}
-              />
-              <p className="text-center mt-2 text-green-600 text-xs sm:text-base">Income</p>
+          {/* Monthly Trends Bar Chart */}
+          <div className="bg-white p-2 sm:p-4 rounded-lg shadow-md mb-4 sm:mb-6 flex flex-col items-center w-full min-w-0 text-center">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-700 mb-2 sm:mb-4">Monthly Income & Expenditure Trends</h3>
+            <div className="w-full max-w-[320px] sm:max-w-[500px] h-[160px] sm:h-[260px] mx-auto">
+              <Bar data={monthlyBarData} options={{ responsive: true, maintainAspectRatio: false }} />
             </div>
-            <div className="w-24 sm:w-36">
-              <CircularProgressbar
-                value={(totalExpenditure / (totalIncome + totalExpenditure)) * 100 || 0}
-                text={`${((totalExpenditure / (totalIncome + totalExpenditure)) * 100 || 0).toFixed(1)}%`}
-                styles={buildStyles({
-                  textSize: '14px',
-                  pathColor: `rgba(255, 99, 132, 0.6)`,
-                  textColor: '#4b4b4b',
-                })}
-              />
-              <p className="text-center mt-2 text-red-600 text-xs sm:text-base">Expenditure</p>
+          </div>
+
+          {/* Recent Transactions Table */}
+          <div className="bg-white p-2 sm:p-4 rounded-lg shadow-md mb-4 sm:mb-6 overflow-x-auto w-full">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-700 mb-2 sm:mb-4">Recent Transactions</h3>
+            <table className="min-w-full border border-gray-300 text-xs sm:text-base">
+              <thead>
+                <tr className="bg-gray-100">
+                  <th className="px-2 sm:px-4 py-2 border">Date</th>
+                  <th className="px-2 sm:px-4 py-2 border">Type</th>
+                  <th className="px-2 sm:px-4 py-2 border">Source/Votehead</th>
+                  <th className="px-2 sm:px-4 py-2 border">Amount</th>
+                  <th className="px-2 sm:px-4 py-2 border">Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[...recentIncomes.map(i => ({
+                  ...i,
+                  type: 'Income',
+                  label: i.revenueSource?.name || 'N/A',
+                  date: i.createdAt,
+                })),
+                ...recentExpenditures.map(e => ({
+                  ...e,
+                  type: 'Expenditure',
+                  label: e.votehead?.name || 'N/A',
+                  date: e.createdAt,
+                }))]
+                  .sort((a, b) => new Date(b.date) - new Date(a.date))
+                  .slice(0, 10)
+                  .map((item, idx) => (
+                    <tr key={idx} className={item.type === 'Income' ? 'bg-green-50' : 'bg-red-50'}>
+                      <td className="px-2 sm:px-4 py-2 border">{new Date(item.date).toLocaleDateString()}</td>
+                      <td className="px-2 sm:px-4 py-2 border font-semibold">{item.type}</td>
+                      <td className="px-2 sm:px-4 py-2 border">{item.label}</td>
+                      <td className="px-2 sm:px-4 py-2 border text-right">{item.amount}</td>
+                      <td className="px-2 sm:px-4 py-2 border">{item.description}</td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Combined Radial Progress */}
+          <div className="bg-white p-2 sm:p-6 rounded-lg shadow-md flex flex-col items-center w-full min-w-0 text-center">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-700 mb-2 sm:mb-4">Income vs Expenditure</h3>
+            <div className="flex flex-col sm:flex-row justify-around items-center w-full gap-4">
+              <div className="w-24 sm:w-36">
+                <CircularProgressbar
+                  value={(totalIncome / (totalIncome + totalExpenditure)) * 100 || 0}
+                  text={`${((totalIncome / (totalIncome + totalExpenditure)) * 100 || 0).toFixed(1)}%`}
+                  styles={buildStyles({
+                    textSize: '14px',
+                    pathColor: `rgba(75, 192, 192, 0.6)`,
+                    textColor: '#4b4b4b',
+                  })}
+                />
+                <p className="text-center mt-2 text-green-600 text-xs sm:text-base">Income</p>
+              </div>
+              <div className="w-24 sm:w-36">
+                <CircularProgressbar
+                  value={(totalExpenditure / (totalIncome + totalExpenditure)) * 100 || 0}
+                  text={`${((totalExpenditure / (totalIncome + totalExpenditure)) * 100 || 0).toFixed(1)}%`}
+                  styles={buildStyles({
+                    textSize: '14px',
+                    pathColor: `rgba(255, 99, 132, 0.6)`,
+                    textColor: '#4b4b4b',
+                  })}
+                />
+                <p className="text-center mt-2 text-red-600 text-xs sm:text-base">Expenditure</p>
+              </div>
             </div>
           </div>
         </div>

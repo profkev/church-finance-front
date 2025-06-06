@@ -10,8 +10,8 @@ const MainLayout = () => {
       <Sidebar />
 
       {/* Main Content */}
-      <main className="flex-grow p-6">
-        <div className="w-full max-w-md sm:max-w-2xl md:max-w-4xl mx-auto">
+      <main className="flex-1 w-full overflow-x-hidden flex flex-col">
+        <div className="flex-1 w-full max-w-md sm:max-w-2xl md:max-w-4xl mx-auto px-4 py-6">
           <Outlet />
         </div>
         <Footer />

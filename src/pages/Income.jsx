@@ -141,134 +141,109 @@ const Income = () => {
   return (
     <div className="flex flex-col lg:flex-row h-screen">
       {/* Main Content */}
-      <div className="flex-grow overflow-y-auto p-4 bg-gray-50">
-        <h1 className="text-3xl font-bold mb-6 text-center text-blue-700">Income Management</h1>
+      <div className="flex-grow overflow-y-auto bg-gradient-to-r from-blue-50 to-blue-100 pb-24">
+        <div className="w-full max-w-md sm:max-w-2xl md:max-w-4xl mx-auto px-2">
+          {/* Form Section - Always visible */}
+          <div className="bg-white p-4 rounded-lg shadow-md mb-4">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">Add New Income</h2>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <select
+                  value={form.revenueSource}
+                  onChange={(e) => setForm({ ...form, revenueSource: e.target.value })}
+                  className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                >
+                  <option value="">Select Revenue Source</option>
+                  {revenueSources.map((source) => (
+                    <option key={source._id} value={source._id}>{source.name}</option>
+                  ))}
+                </select>
 
-        {/* Income Form */}
-        <form className="mb-8" onSubmit={handleSubmit}>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <select
-              value={form.revenueSource}
-              onChange={(e) => setForm({ ...form, revenueSource: e.target.value })}
-              className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            >
-              <option value="">Select Revenue Source</option>
-              {revenueSources.map((source) => (
-                <option key={source._id} value={source._id}>{source.name}</option>
-              ))}
-            </select>
+                <select
+                  value={form.assetAccount}
+                  onChange={(e) => setForm({ ...form, assetAccount: e.target.value })}
+                  className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                >
+                  <option value="">Select Account (Cash/Bank)</option>
+                  {accounts.map((account) => (
+                    <option key={account._id} value={account._id}>{account.code} - {account.name}</option>
+                  ))}
+                </select>
 
-            <select
-              value={form.assetAccount}
-              onChange={(e) => setForm({ ...form, assetAccount: e.target.value })}
-              className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            >
-              <option value="">Select Account (Cash/Bank)</option>
-              {accounts.map((account) => (
-                <option key={account._id} value={account._id}>{account.code} - {account.name}</option>
-              ))}
-            </select>
-
-            <input
-              type="number"
-              placeholder="Amount"
-              className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={form.amount}
-              onChange={(e) => setForm({ ...form, amount: e.target.value })}
-              required
-            />
-            <input
-              type="text"
-              placeholder="Description"
-              className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 col-span-1 md:col-span-2"
-              value={form.description}
-              onChange={(e) => setForm({ ...form, description: e.target.value })}
-            />
+                <input
+                  type="number"
+                  placeholder="Amount"
+                  className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={form.amount}
+                  onChange={(e) => setForm({ ...form, amount: e.target.value })}
+                  required
+                />
+                <input
+                  type="text"
+                  placeholder="Description"
+                  className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 col-span-1 md:col-span-2"
+                  value={form.description}
+                  onChange={(e) => setForm({ ...form, description: e.target.value })}
+                />
+              </div>
+              <button
+                type="submit"
+                className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition ease-in-out duration-200"
+                disabled={loading}
+              >
+                {loading ? 'Processing...' : editId ? 'Update Income' : 'Add Income'}
+              </button>
+              {error && <p className="text-red-500 mt-2">{error}</p>}
+            </form>
           </div>
-          <button
-            type="submit"
-            className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition ease-in-out duration-200"
-            disabled={loading}
-          >
-            {loading ? 'Processing...' : editId ? 'Update Income' : 'Add Income'}
-          </button>
-          {error && <p className="text-red-500 mt-2">{error}</p>}
-        </form>
 
-        {/* Income Table by Month */}
-        {Object.keys(groupedIncomes).map((month) => (
-          <div key={month} className="mb-6">
-            <div
-              className="bg-blue-200 p-3 cursor-pointer font-bold flex justify-between items-center rounded-lg shadow-md"
-              onClick={() => toggleMonth(month)}
-            >
-              <span>{month}</span>
-              <span>Total: {groupedIncomes[month].reduce((sum, income) => sum + income.amount, 0)}</span>
+          {/* Table Section - Scrollable */}
+          <div className="bg-white rounded-lg shadow-md">
+            <div className="p-4 border-b border-gray-200">
+              <h2 className="text-xl font-semibold text-gray-800">Income Records</h2>
             </div>
-            {!collapsedMonths[month] && (
-              <table className="w-full border-collapse border border-gray-300 mt-3 rounded-md overflow-hidden">
-                <thead>
-                  <tr className="bg-blue-300">
-                    <th className="border p-2">Revenue Source</th>
-                    <th className="border p-2">Account</th>
-                    <th className="border p-2">Amount</th>
-                    <th className="border p-2">Description</th>
-                    <th className="border p-2">Day</th>
-                    <th className="border p-2">User</th>
-                    {userName === 'Admin' && <th className="border p-2">Actions</th>}
+            <div className="h-[calc(100vh-400px)] overflow-y-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50 sticky top-0">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Revenue Source</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
-                <tbody>
-                  {groupedIncomes[month].map((income) => (
-                    <tr key={income._id} className="hover:bg-blue-50 transition">
-                      <td className="border p-2">{income.revenueSource?.name || 'N/A'}</td>
-                      <td className="border p-2">{accounts.find(a => a._id === income.assetAccount)?.name || 'N/A'}</td>
-                      <td className="border p-2">{income.amount}</td>
-                      <td className="border p-2">{income.description}</td>
-                      <td className="border p-2">
-                        {new Date(income.createdAt).toLocaleDateString('en-US', {
-                          weekday: 'short', day: 'numeric', month: 'short',
-                        })}
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {incomes.map((income) => (
+                    <tr key={income._id}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {new Date(income.date).toLocaleDateString()}
                       </td>
-                      <td className="border p-2">{income.user || 'Unknown'}</td>
-                      {userName === 'Admin' && (
-                        <td className="border p-2 flex justify-center space-x-2">
-                          <button
-                            onClick={() => {
-                              setForm({
-                                revenueSource: income.revenueSource?._id || '',
-                                amount: income.amount,
-                                description: income.description,
-                                year: income.year,
-                                assetAccount: income.assetAccount || '',
-                              });
-                              setEditId(income._id);
-                            }}
-                            className="bg-yellow-500 text-white py-1 px-3 rounded hover:bg-yellow-600"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => handleDelete(income._id)}
-                            className="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600"
-                          >
-                            Delete
-                          </button>
-                        </td>
-                      )}
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {income.revenueSource?.name || 'N/A'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        KES {income.amount.toLocaleString()}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-500">
+                        {income.description}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <button
+                          onClick={() => handleDelete(income._id)}
+                          className="text-red-600 hover:text-red-900"
+                        >
+                          Delete
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-            )}
+            </div>
           </div>
-        ))}
-
-        {/* Grand Total */}
-        <div className="mt-6 bg-blue-300 p-3 text-center font-bold rounded-lg shadow-lg">
-          Grand Total: {grandTotal}
         </div>
       </div>
     </div>

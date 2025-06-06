@@ -74,10 +74,10 @@ const Sidebar = () => {
       )}
       {/* Sidebar */}
       <div
-        className={`flex flex-col fixed top-0 left-0 h-full w-64 bg-gradient-to-b from-teal-700 to-indigo-900 z-50 text-white shadow-lg transform transition-transform duration-300
-          ${isMobile ? (sidebarOpen ? 'translate-x-0' : '-translate-x-full') : 'relative translate-x-0'}
+        className={`fixed top-0 left-0 h-full w-64 bg-gradient-to-b from-teal-700 to-indigo-900 z-50 text-white shadow-lg transform transition-transform duration-300
+          ${isMobile ? (sidebarOpen ? 'translate-x-0' : '-translate-x-full') : 'translate-x-0'}
         `}
-        style={{ minHeight: isMobile ? '100vh' : 'auto' }}
+        style={{ minHeight: '100vh' }}
       >
         {/* Close button for mobile */}
         {isMobile && (

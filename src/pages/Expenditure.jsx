@@ -150,134 +150,109 @@ const Expenditure = () => {
   return (
     <div className="flex flex-col lg:flex-row h-screen">
       {/* Main Content */}
-      <div className="flex-grow overflow-y-auto p-4 bg-gradient-to-r from-green-50 to-green-100">
-        <h1 className="text-3xl font-bold mb-6 text-center text-green-700">Expenditure Management</h1>
+      <div className="flex-grow overflow-y-auto bg-gradient-to-r from-blue-50 to-blue-100 pb-24">
+        <div className="w-full max-w-md sm:max-w-2xl md:max-w-4xl mx-auto px-2">
+          {/* Form Section - Always visible */}
+          <div className="bg-white p-4 rounded-lg shadow-md mb-4">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">Add New Expenditure</h2>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <select
+                  value={form.votehead}
+                  onChange={(e) => setForm({ ...form, votehead: e.target.value })}
+                  className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+                  required
+                >
+                  <option value="">Select Votehead</option>
+                  {voteheads.map((votehead) => (
+                    <option key={votehead._id} value={votehead._id}>{votehead.name}</option>
+                  ))}
+                </select>
 
-        {/* Expenditure Form */}
-        <form className="mb-8" onSubmit={handleSubmit}>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <select
-              value={form.votehead}
-              onChange={(e) => setForm({ ...form, votehead: e.target.value })}
-              className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500"
-              required
-            >
-              <option value="">Select Votehead</option>
-              {voteheads.map((votehead) => (
-                <option key={votehead._id} value={votehead._id}>{votehead.name}</option>
-              ))}
-            </select>
+                <select
+                  value={form.assetAccount}
+                  onChange={(e) => setForm({ ...form, assetAccount: e.target.value })}
+                  className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+                  required
+                >
+                  <option value="">Select Account (Cash/Bank)</option>
+                  {accounts.map((account) => (
+                    <option key={account._id} value={account._id}>{account.code} - {account.name}</option>
+                  ))}
+                </select>
 
-            <select
-              value={form.assetAccount}
-              onChange={(e) => setForm({ ...form, assetAccount: e.target.value })}
-              className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500"
-              required
-            >
-              <option value="">Select Account (Cash/Bank)</option>
-              {accounts.map((account) => (
-                <option key={account._id} value={account._id}>{account.code} - {account.name}</option>
-              ))}
-            </select>
-
-            <input
-              type="number"
-              placeholder="Amount"
-              className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500"
-              value={form.amount}
-              onChange={(e) => setForm({ ...form, amount: e.target.value })}
-              required
-            />
-            <input
-              type="text"
-              placeholder="Description"
-              className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500 col-span-1 md:col-span-2"
-              value={form.description}
-              onChange={(e) => setForm({ ...form, description: e.target.value })}
-            />
+                <input
+                  type="number"
+                  placeholder="Amount"
+                  className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+                  value={form.amount}
+                  onChange={(e) => setForm({ ...form, amount: e.target.value })}
+                  required
+                />
+                <input
+                  type="text"
+                  placeholder="Description"
+                  className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500 col-span-1 md:col-span-2"
+                  value={form.description}
+                  onChange={(e) => setForm({ ...form, description: e.target.value })}
+                />
+              </div>
+              <button
+                type="submit"
+                className="bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 transition ease-in-out duration-200"
+                disabled={loading}
+              >
+                {loading ? 'Processing...' : editId ? 'Update Expenditure' : 'Add Expenditure'}
+              </button>
+              {error && <p className="text-red-500 mt-2">{error}</p>}
+            </form>
           </div>
-          <button
-            type="submit"
-            className="bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 transition ease-in-out duration-200"
-            disabled={loading}
-          >
-            {loading ? 'Processing...' : editId ? 'Update Expenditure' : 'Add Expenditure'}
-          </button>
-          {error && <p className="text-red-500 mt-2">{error}</p>}
-        </form>
 
-        {/* Expenditure Table by Month */}
-        {Object.keys(groupedExpenditures).map((month) => (
-          <div key={month} className="mb-6">
-            <div
-              className="bg-green-200 p-3 cursor-pointer font-bold flex justify-between items-center rounded-lg shadow-md"
-              onClick={() => toggleMonth(month)}
-            >
-              <span>{month}</span>
-              <span>Total: {groupedExpenditures[month].reduce((sum, expenditure) => sum + expenditure.amount, 0)}</span>
+          {/* Table Section - Scrollable */}
+          <div className="bg-white rounded-lg shadow-md">
+            <div className="p-4 border-b border-gray-200">
+              <h2 className="text-xl font-semibold text-gray-800">Expenditure Records</h2>
             </div>
-            {!collapsedMonths[month] && (
-              <table className="w-full border-collapse border border-gray-300 mt-3 rounded-md overflow-hidden">
-                <thead>
-                  <tr className="bg-green-300">
-                    <th className="border p-2">Votehead</th>
-                    <th className="border p-2">Account</th>
-                    <th className="border p-2">Amount</th>
-                    <th className="border p-2">Description</th>
-                    <th className="border p-2">Day</th>
-                    <th className="border p-2">User</th>
-                    {userName === 'Admin' && <th className="border p-2">Actions</th>}
+            <div className="h-[calc(100vh-400px)] overflow-y-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50 sticky top-0">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Votehead</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
-                <tbody>
-                  {groupedExpenditures[month].map((expenditure) => (
-                    <tr key={expenditure._id} className="hover:bg-green-50 transition">
-                      <td className="border p-2">{expenditure.votehead?.name || 'N/A'}</td>
-                      <td className="border p-2">{accounts.find(a => a._id === expenditure.assetAccount)?.name || 'N/A'}</td>
-                      <td className="border p-2">{expenditure.amount}</td>
-                      <td className="border p-2">{expenditure.description}</td>
-                      <td className="border p-2">
-                        {new Date(expenditure.createdAt).toLocaleDateString('en-US', {
-                          weekday: 'short', day: 'numeric', month: 'short',
-                        })}
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {expenditures.map((expenditure) => (
+                    <tr key={expenditure._id}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {new Date(expenditure.date).toLocaleDateString()}
                       </td>
-                      <td className="border p-2">{expenditure.user || 'Unknown'}</td>
-                      {userName === 'Admin' && (
-                        <td className="border p-2 flex justify-center space-x-2">
-                          <button
-                            onClick={() => {
-                              setForm({
-                                votehead: expenditure.votehead?._id || '',
-                                amount: expenditure.amount,
-                                description: expenditure.description,
-                                year: expenditure.year,
-                                assetAccount: expenditure.assetAccount || '',
-                              });
-                              setEditId(expenditure._id);
-                            }}
-                            className="bg-yellow-500 text-white py-1 px-3 rounded hover:bg-yellow-600"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => handleDelete(expenditure._id)}
-                            className="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600"
-                          >
-                            Delete
-                          </button>
-                        </td>
-                      )}
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {expenditure.votehead?.name || 'N/A'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        KES {expenditure.amount.toLocaleString()}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-500">
+                        {expenditure.description}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <button
+                          onClick={() => handleDelete(expenditure._id)}
+                          className="text-red-600 hover:text-red-900"
+                        >
+                          Delete
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-            )}
+            </div>
           </div>
-        ))}
-
-        {/* Grand Total */}
-        <div className="mt-6 bg-green-300 p-3 text-center font-bold rounded-lg shadow-lg">
-          Grand Total: {grandTotal}
         </div>
       </div>
     </div>

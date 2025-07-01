@@ -21,6 +21,7 @@ const Dashboard = () => {
   const [userName, setUserName] = useState('');
   const [totalIncome, setTotalIncome] = useState(0);
   const [totalExpenditure, setTotalExpenditure] = useState(0);
+  const [netBalance, setNetBalance] = useState(0);
   const [incomeData, setIncomeData] = useState([]);
   const [expenditureData, setExpenditureData] = useState([]);
   const [revenueSources, setRevenueSources] = useState([]);
@@ -29,42 +30,43 @@ const Dashboard = () => {
   const [recentExpenditures, setRecentExpenditures] = useState([]);
   const [monthlyIncome, setMonthlyIncome] = useState([]);
   const [monthlyExpenditure, setMonthlyExpenditure] = useState([]);
+  const [revenue, setRevenue] = useState([]);
+  const [expenses, setExpenses] = useState([]);
   const navigate = useNavigate();
+
+  const fetchIncomeExpenditureSummary = async () => {
+    try {
+      const startDate = new Date(new Date().getFullYear(), 0, 1).toISOString().slice(0, 10);
+      const endDate = new Date().toISOString().slice(0, 10);
+      const response = await API.get('/api/accounting/income-expenditure', {
+        params: { startDate, endDate }
+      });
+      setTotalIncome(response.data.totalRevenue || 0);
+      setTotalExpenditure(response.data.totalExpenses || 0);
+      setNetBalance((response.data.totalRevenue || 0) - (response.data.totalExpenses || 0));
+      setRevenue(response.data.revenue || []);
+      setExpenses(response.data.expenses || []);
+    } catch (error) {
+      console.error('Error fetching income/expenditure summary:', error.message);
+    }
+  };
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     const user = JSON.parse(localStorage.getItem('user'));
+    const tenant = JSON.parse(localStorage.getItem('tenant'));
+    const tenantName = tenant?.name || 'Your Church';
     if (!token || !user) {
       navigate('/login');
     } else {
       setUserName(user.name || 'Guest');
-      fetchSummaryData();
+      fetchIncomeExpenditureSummary();
       fetchRevenueSources();
       fetchVoteheads();
       fetchRecentTransactions();
       fetchMonthlyTrends();
     }
   }, [navigate]);
-
-  const fetchSummaryData = async () => {
-    try {
-      // Set date range: start of year to today
-      const startDate = new Date(new Date().getFullYear(), 0, 1).toISOString().slice(0, 10);
-      const endDate = new Date().toISOString().slice(0, 10);
-      const incomeResponse = await API.get('/api/reports/aggregated-reports', {
-        params: { type: 'income', startDate, endDate }
-      });
-      const expenditureResponse = await API.get('/api/reports/aggregated-reports', {
-        params: { type: 'expenditure', startDate, endDate }
-      });
-      setIncomeData(incomeResponse.data.aggregatedData || []);
-      setExpenditureData(expenditureResponse.data.aggregatedData || []);
-      setTotalIncome(incomeResponse.data.aggregatedData.reduce((sum, item) => sum + item.totalAmount, 0));
-      setTotalExpenditure(expenditureResponse.data.aggregatedData.reduce((sum, item) => sum + item.totalAmount, 0));
-    } catch (error) {
-      console.error('Error fetching summary data:', error.message);
-    }
-  };
 
   const fetchRevenueSources = async () => {
     try {
@@ -124,36 +126,54 @@ const Dashboard = () => {
         return months;
       };
       setMonthlyIncome(groupByMonth(incomeRes.data.incomes || [], 'createdAt'));
-      setMonthlyExpenditure(groupByMonth(expenditureRes.data.expenditures || [], 'createdAt'));
+      setMonthlyExpenditure(groupByMonth(expenditureRes.data.expenditures || [], 'date'));
     } catch (error) {
       console.error('Error fetching monthly trends:', error.message);
     }
   };
 
   // Pie chart for income by revenue source
-  const incomePieData = {
-    labels: incomeData.map((item) => item.name || 'N/A'),
+  const incomePieData = revenue.length > 0 ? {
+    labels: revenue.map((item) => item.accountName || 'Unknown Revenue Source'),
     datasets: [
       {
         label: 'Income by Revenue Source',
-        data: incomeData.map((item) => item.totalAmount),
+        data: revenue.map((item) => item.amount),
         backgroundColor: [
           '#4fd1c5', '#4299e1', '#f6ad55', '#fc8181', '#9f7aea', '#68d391', '#f687b3', '#ed8936', '#38b2ac', '#ecc94b',
         ],
       },
     ],
+  } : {
+    labels: ['No Data'],
+    datasets: [
+      {
+        label: 'Income by Revenue Source',
+        data: [1],
+        backgroundColor: ['#e2e8f0'],
+      },
+    ],
   };
 
   // Pie chart for expenditure by votehead
-  const expenditurePieData = {
-    labels: expenditureData.map((item) => item.name || 'N/A'),
+  const expenditurePieData = expenses.length > 0 ? {
+    labels: expenses.map((item) => item.accountName || 'Unknown Votehead'),
     datasets: [
       {
         label: 'Expenditure by Votehead',
-        data: expenditureData.map((item) => item.totalAmount),
+        data: expenses.map((item) => item.amount),
         backgroundColor: [
           '#fc8181', '#f6ad55', '#4fd1c5', '#4299e1', '#9f7aea', '#68d391', '#f687b3', '#ed8936', '#38b2ac', '#ecc94b',
         ],
+      },
+    ],
+  } : {
+    labels: ['No Data'],
+    datasets: [
+      {
+        label: 'Expenditure by Votehead',
+        data: [1],
+        backgroundColor: ['#e2e8f0'],
       },
     ],
   };
@@ -182,8 +202,6 @@ const Dashboard = () => {
     ],
   };
 
-  const netBalance = totalIncome - totalExpenditure;
-
   return (
     <div className="h-screen flex flex-col">
       {/* Greeting and Quick Links */}
@@ -191,10 +209,30 @@ const Dashboard = () => {
         <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
           <h1 className="text-xl sm:text-2xl font-bold text-blue-700 mb-2 md:mb-0 text-center md:text-left">Welcome, {userName}!</h1>
           <div className="flex flex-col sm:flex-row flex-wrap gap-2 w-full sm:w-auto items-center justify-center">
-            <Link to="/income" className="bg-blue-600 text-white w-full sm:w-auto px-4 py-2 rounded shadow hover:bg-blue-700 transition text-center">Add Income</Link>
-            <Link to="/expenditure" className="bg-green-600 text-white w-full sm:w-auto px-4 py-2 rounded shadow hover:bg-green-700 transition text-center">Add Expenditure</Link>
-            <Link to="/revenue-sources" className="bg-purple-600 text-white w-full sm:w-auto px-4 py-2 rounded shadow hover:bg-purple-700 transition text-center">Manage Revenue Sources</Link>
-            <Link to="/voteheads" className="bg-yellow-500 text-white w-full sm:w-auto px-4 py-2 rounded shadow hover:bg-yellow-600 transition text-center">Manage Voteheads</Link>
+            <button
+              onClick={() => navigate('/app/income')}
+              className="bg-blue-600 text-white w-full sm:w-auto px-4 py-2 rounded shadow hover:bg-blue-700 transition text-center"
+            >
+              Add Income
+            </button>
+            <button
+              onClick={() => navigate('/app/expenditure')}
+              className="bg-green-600 text-white w-full sm:w-auto px-4 py-2 rounded shadow hover:bg-green-700 transition text-center"
+            >
+              Add Expenditure
+            </button>
+            <button
+              onClick={() => navigate('/app/revenue-sources')}
+              className="bg-purple-600 text-white w-full sm:w-auto px-4 py-2 rounded shadow hover:bg-purple-700 transition text-center"
+            >
+              Manage Revenue Sources
+            </button>
+            <button
+              onClick={() => navigate('/app/voteheads')}
+              className="bg-yellow-500 text-white w-full sm:w-auto px-4 py-2 rounded shadow hover:bg-yellow-600 transition text-center"
+            >
+              Manage Voteheads
+            </button>
           </div>
         </div>
       </div>
@@ -233,6 +271,7 @@ const Dashboard = () => {
               <h3 className="text-base sm:text-lg font-semibold text-gray-700 mb-2 sm:mb-4">Income by Revenue Source</h3>
               <div className="w-full max-w-[220px] sm:max-w-[300px] h-[140px] sm:h-[220px] mx-auto">
                 <Pie data={incomePieData} options={{ responsive: true, maintainAspectRatio: false }} />
+                {revenue.length === 0 && <div className="text-gray-500 text-sm mt-2">No income data available for this period.</div>}
               </div>
             </div>
             {/* Expenditure Pie Chart */}
@@ -240,6 +279,7 @@ const Dashboard = () => {
               <h3 className="text-base sm:text-lg font-semibold text-gray-700 mb-2 sm:mb-4">Expenditure by Votehead</h3>
               <div className="w-full max-w-[220px] sm:max-w-[300px] h-[140px] sm:h-[220px] mx-auto">
                 <Pie data={expenditurePieData} options={{ responsive: true, maintainAspectRatio: false }} />
+                {expenses.length === 0 && <div className="text-gray-500 text-sm mt-2">No expenditure data available for this period.</div>}
               </div>
             </div>
           </div>
@@ -276,7 +316,7 @@ const Dashboard = () => {
                   ...e,
                   type: 'Expenditure',
                   label: e.votehead?.name || 'N/A',
-                  date: e.createdAt,
+                  date: e.date || e.createdAt,
                 }))]
                   .sort((a, b) => new Date(b.date) - new Date(a.date))
                   .slice(0, 10)

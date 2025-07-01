@@ -1,9 +1,17 @@
 import React from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar'; // Sidebar replaces Navbar
 import Footer from '../components/Footer';
 
 const MainLayout = () => {
+  const navigate = useNavigate();
+  React.useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login');
+    }
+  }, [navigate]);
+
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar Navigation */}

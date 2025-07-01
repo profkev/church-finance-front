@@ -23,6 +23,12 @@ const Login = () => {
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
 
+      // Fetch and store tenant information
+      if (user.tenantId) {
+        const tenantResponse = await API.get(`/api/tenants/${user.tenantId}`);
+        localStorage.setItem('tenant', JSON.stringify(tenantResponse.data));
+      }
+
       // Redirect to the dashboard or desired page
       navigate('/');
     } catch (err) {
@@ -77,6 +83,12 @@ const Login = () => {
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
+        <p className="text-center mt-4">
+          Don't have an account?{' '}
+          <a href="/register" className="text-blue-600 hover:underline">
+            Register here
+          </a>
+        </p>
       </div>
     </div>
   );

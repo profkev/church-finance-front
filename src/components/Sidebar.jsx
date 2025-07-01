@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { FaUserCircle, FaSignOutAlt, FaHome, FaFileInvoiceDollar, FaChartPie, FaClipboardList, FaChevronDown, FaChartBar, FaBook, FaTimes, FaBars } from 'react-icons/fa';
+import { Link, useNavigate, useLocation, NavLink } from 'react-router-dom';
+import { FaUserCircle, FaSignOutAlt, FaHome, FaFileInvoiceDollar, FaChartPie, FaClipboardList, FaChevronDown, FaChartBar, FaBook, FaTimes, FaBars, FaTachometerAlt, FaMoneyBillWave, FaListAlt, FaUsers } from 'react-icons/fa';
+import API from '../utils/apiConfig';
 
 const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(true); // Sidebar toggle state
@@ -8,7 +9,11 @@ const Sidebar = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false); // For overlay sidebar
   const navigate = useNavigate();
   const location = useLocation();
-  const userName = JSON.parse(localStorage.getItem('user'))?.name || 'Guest';
+
+  const user = JSON.parse(localStorage.getItem('user')) || {};
+  const tenant = JSON.parse(localStorage.getItem('tenant')) || {};
+  const { name: userName = 'Guest', role: userRole } = user;
+  const { name: tenantName = 'Church Finance' } = tenant;
 
   useEffect(() => {
     const handleResize = () => {
@@ -34,21 +39,26 @@ const Sidebar = () => {
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    localStorage.removeItem('tenant');
     navigate('/login');
   };
 
   const menuItems = [
-    { path: '/', label: 'Dashboard', icon: <FaHome /> },
-    { path: '/income', label: 'Income', icon: <FaFileInvoiceDollar /> },
-    { path: '/expenditure', label: 'Expenditure', icon: <FaChartPie /> },
-    { path: '/reports', label: 'Reports', icon: <FaClipboardList /> },
-    { path: '/voteheads', label: 'Votehead Manager', icon: <FaClipboardList /> },
-    { path: '/revenue-sources', label: 'Revenue Source Manager', icon: <FaClipboardList /> },
-    { path: '/visualization', label: 'Visuals', icon: <FaChartBar /> },
-    { path: '/accounting-reports', label: 'Accounting Reports', icon: <FaBook /> },
-    { path: '/accounts', label: 'Accounts', icon: <FaBook /> },
-    { path: '/journal-entries', label: 'Journal Entries', icon: <FaClipboardList /> },
+    { path: '/app/dashboard', label: 'Dashboard', icon: <FaHome /> },
+    { path: '/app/income', label: 'Income', icon: <FaFileInvoiceDollar /> },
+    { path: '/app/expenditure', label: 'Expenditure', icon: <FaChartPie /> },
+    { path: '/app/reports', label: 'Reports', icon: <FaClipboardList /> },
+    { path: '/app/voteheads', label: 'Voteheads', icon: <FaClipboardList /> },
+    { path: '/app/revenue-sources', label: 'Revenue Sources', icon: <FaClipboardList /> },
+    { path: '/app/visualization', label: 'Visuals', icon: <FaChartBar /> },
+    { path: '/app/accounting', label: 'Accounting', icon: <FaBook /> },
+    { path: '/app/accounts', label: 'Accounts', icon: <FaBook /> },
+    { path: '/app/journal-entries', label: 'Journal', icon: <FaClipboardList /> },
   ];
+
+  if (userRole === 'Admin') {
+    menuItems.push({ path: '/app/user-management', label: 'User Management', icon: <FaUsers /> });
+  }
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
   const closeSidebar = () => setSidebarOpen(false);
@@ -96,7 +106,7 @@ const Sidebar = () => {
         )}
         {/* Logo Section */}
         <div className="flex items-center justify-center py-6 border-b border-indigo-700">
-          <h1 className="text-2xl font-extrabold tracking-wide">ACK Kamune</h1>
+          <h1 className="text-2xl font-extrabold tracking-wide">{tenantName}</h1>
         </div>
         {/* User Info Section */}
         <div className="flex items-center p-4 border-b border-indigo-700">
@@ -113,7 +123,7 @@ const Sidebar = () => {
           </div>
         </div>
         {/* Navigation Links */}
-        <nav className="flex flex-col flex-grow space-y-2 p-4">
+        <nav className="flex flex-col flex-grow space-y-2 p-4 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 220px)' }}>
           {menuItems.map((item) => (
             <Link
               key={item.path}
@@ -129,6 +139,9 @@ const Sidebar = () => {
               <span className="font-medium">{item.label}</span>
             </Link>
           ))}
+          <NavLink to="/app/accounting" className={({ isActive }) => isActive ? "bg-gray-700 block py-2 px-4" : "block py-2 px-4 hover:bg-gray-700"}>
+            <FaChartBar className="inline-block mr-2" /> Accounting Reports
+          </NavLink>
         </nav>
         {/* Footer Section */}
         <div className="p-4 border-t border-indigo-700 mt-auto">

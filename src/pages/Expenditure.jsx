@@ -11,6 +11,7 @@ const Expenditure = () => {
     description: '',
     year: new Date().getFullYear(),
     assetAccount: '',
+    date: new Date().toISOString().split('T')[0],
   });
   const [editId, setEditId] = useState(null);
   const [error, setError] = useState('');
@@ -94,7 +95,7 @@ const Expenditure = () => {
         });
       }
 
-      setForm({ votehead: '', amount: '', description: '', year: new Date().getFullYear(), assetAccount: '' });
+      setForm({ votehead: '', amount: '', description: '', year: new Date().getFullYear(), assetAccount: '', date: new Date().toISOString().split('T')[0] });
       fetchExpenditures();
     } catch (error) {
       console.error('Error saving expenditure:', error.response?.data?.message || error.message);
@@ -122,7 +123,7 @@ const Expenditure = () => {
 
   const groupExpendituresByMonth = () => {
     const grouped = expenditures.reduce((acc, expenditure) => {
-      const date = new Date(expenditure.createdAt);
+      const date = new Date(expenditure.date || expenditure.createdAt);
       const month = date.toLocaleString('default', { month: 'long', year: 'numeric' });
       if (!acc[month]) acc[month] = [];
       acc[month].push(expenditure);
@@ -228,7 +229,7 @@ const Expenditure = () => {
                   {expenditures.map((expenditure) => (
                     <tr key={expenditure._id} className="hover:bg-red-50 transition-colors duration-200">
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                        {new Date(expenditure.date).toLocaleDateString()}
+                        {new Date(expenditure.date || expenditure.createdAt).toLocaleDateString()}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                         {expenditure.votehead?.name || 'N/A'}

@@ -95,8 +95,8 @@ const JournalEntries = () => {
     }
   };
 
-  if (role !== 'Special User') {
-    return <div className="bg-red-100 text-red-700 p-4 rounded">Access denied: Only Special Users can manage journal entries.</div>;
+  if (role !== 'Admin') {
+    return <div className="bg-red-100 text-red-700 p-4 rounded">Access denied: Only Admins can manage journal entries.</div>;
   }
 
   return (

@@ -22,8 +22,14 @@ const dateSupported = {
 
 const AccountingReports = () => {
   const [reportType, setReportType] = useState('trial-balance');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const [startDate, setStartDate] = useState(() => {
+    const d = new Date();
+    return `${d.getFullYear()}-01-01`;
+  });
+  const [endDate, setEndDate] = useState(() => {
+    const d = new Date();
+    return d.toISOString().slice(0, 10);
+  });
   const [reportData, setReportData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -33,8 +39,11 @@ const AccountingReports = () => {
     const token = localStorage.getItem('token');
     if (!token) {
       navigate('/login');
+    } else if (dateSupported[reportType]) {
+      fetchReport();
     }
-  }, [navigate]);
+    // eslint-disable-next-line
+  }, [navigate, reportType]);
 
   const fetchReport = async () => {
     try {

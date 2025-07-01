@@ -93,10 +93,10 @@ const VoteheadForm = () => {
     }
   };
 
-  if (role !== 'Special User') {
+  if (role !== 'Admin') {
     return (
       <div className="bg-red-100 text-red-700 p-4 rounded">
-        Access denied: Only Special Users can manage voteheads.
+        Access denied: Only Admins can manage voteheads.
       </div>
     );
   }

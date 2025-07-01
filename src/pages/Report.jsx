@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import API from '../utils/apiConfig';
 import moment from 'moment';
 import {
   Box,
@@ -43,7 +43,7 @@ const Report = () => {
   const fetchOriginalData = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('/api/reports/reports', {
+      const response = await API.get('/api/reports/reports', {
         params: {
           type: filterType,
           startDate,
@@ -61,7 +61,7 @@ const Report = () => {
   const fetchCombinedData = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('/api/reports/aggregated-reports', {
+      const response = await API.get('/api/reports/aggregated-reports', {
         params: {
           type: combinedFilterType,
           startDate,
@@ -89,7 +89,7 @@ const Report = () => {
       const endpoint = activeSection === 'original' ? '/api/reports/download-report' : '/api/reports/download-aggregated-report';
       const type = activeSection === 'original' ? filterType : combinedFilterType;
       
-      const response = await axios.get(endpoint, {
+      const response = await API.get(endpoint, {
         params: {
           type,
           format,

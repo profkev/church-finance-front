@@ -36,16 +36,50 @@ const Dashboard = () => {
 
   const fetchIncomeExpenditureSummary = async () => {
     try {
-      const startDate = new Date(new Date().getFullYear(), 0, 1).toISOString().slice(0, 10);
-      const endDate = new Date().toISOString().slice(0, 10);
-      const response = await API.get('/api/accounting/income-expenditure', {
-        params: { startDate, endDate }
+      // Fetch all incomes for the tenant
+      const incomeRes = await API.get('/api/incomes', {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
-      setTotalIncome(response.data.totalRevenue || 0);
-      setTotalExpenditure(response.data.totalExpenses || 0);
-      setNetBalance((response.data.totalRevenue || 0) - (response.data.totalExpenses || 0));
-      setRevenue(response.data.revenue || []);
-      setExpenses(response.data.expenses || []);
+      // Fetch all expenditures for the tenant
+      const expenditureRes = await API.get('/api/expenditures', {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      });
+      // Date range: current year
+      const startDate = new Date(new Date().getFullYear(), 0, 1);
+      const endDate = new Date();
+      // Filter incomes by date
+      const filteredIncomes = (incomeRes.data.incomes || []).filter(inc => {
+        const date = new Date(inc.date || inc.createdAt);
+        return date >= startDate && date <= endDate;
+      });
+      // Filter expenditures by date
+      const filteredExpenditures = (expenditureRes.data.expenditures || []).filter(exp => {
+        const date = new Date(exp.date || exp.createdAt);
+        return date >= startDate && date <= endDate;
+      });
+      // Sum total income
+      const totalIncomeSum = filteredIncomes.reduce((sum, inc) => sum + (inc.amount || 0), 0);
+      setTotalIncome(totalIncomeSum);
+      // Sum total expenditure
+      const totalExpenditureSum = filteredExpenditures.reduce((sum, exp) => sum + (exp.amount || 0), 0);
+      setTotalExpenditure(totalExpenditureSum);
+      setNetBalance(totalIncomeSum - totalExpenditureSum);
+      // Group by revenue source for pie chart
+      const revenueMap = {};
+      filteredIncomes.forEach(inc => {
+        const name = inc.revenueSource?.name || 'Unknown Revenue Source';
+        if (!revenueMap[name]) revenueMap[name] = 0;
+        revenueMap[name] += inc.amount || 0;
+      });
+      setRevenue(Object.entries(revenueMap).map(([accountName, amount]) => ({ accountName, amount })));
+      // Group by votehead for expenditure pie chart
+      const expenseMap = {};
+      filteredExpenditures.forEach(exp => {
+        const name = exp.votehead?.name || 'Unknown Votehead';
+        if (!expenseMap[name]) expenseMap[name] = 0;
+        expenseMap[name] += exp.amount || 0;
+      });
+      setExpenses(Object.entries(expenseMap).map(([accountName, amount]) => ({ accountName, amount })));
     } catch (error) {
       console.error('Error fetching income/expenditure summary:', error.message);
     }
